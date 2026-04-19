@@ -147,6 +147,44 @@ footer {
         font-size: 22px;
         margin: 0 10px;
     }
+    .live-token-container {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.live-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--gold);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.live-number-box {
+    background: rgba(197, 160, 89, 0.1);
+    border: 2px solid var(--gold);
+    padding: 10px 30px;
+    border-radius: 50px;
+    box-shadow: 0 0 15px rgba(197, 160, 89, 0.4);
+    animation: livePulse 2s infinite ease-in-out;
+}
+
+.live-number-box span {
+    font-family: 'Cinzel', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--white);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes livePulse {
+    0% { transform: scale(1); box-shadow: 0 0 15px rgba(197, 160, 89, 0.4); }
+    50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(197, 160, 89, 0.7); }
+    100% { transform: scale(1); box-shadow: 0 0 15px rgba(197, 160, 89, 0.4); }
+}
 }
         body, html { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: var(--space-dark); color: white; scroll-behavior: smooth; overflow-x: hidden; }
 
@@ -374,6 +412,12 @@ footer {
 </header>
 
     <section class="hero" id="heroSection">
+        <div class="live-token-container">
+    <span class="live-label">LIVE MEETING TOKEN</span>
+    <div class="live-number-box">
+        <span id="liveTokenDisplay">--</span>
+    </div>
+</div>
         <p style="font-family: 'Great Vibes', cursive; font-size: 3rem; color: var(--gold); margin-bottom: 5px;">Invitation To</p>
         <div class="event-container">
             <span class="event-title">PARENTS & TEACHERS MEET</span>
@@ -543,6 +587,17 @@ footer {
             measurementId: "G-ZMZHXB5GFM"
         };
         firebase.initializeApp(firebaseConfig);
+        // Listen for Live Token Changes
+db.ref('current_meeting_token').on('value', (snapshot) => {
+    const liveToken = snapshot.val();
+    const displayElement = document.getElementById('liveTokenDisplay');
+    
+    if (liveToken) {
+        displayElement.innerText = liveToken;
+    } else {
+        displayElement.innerText = "00"; // Default if nothing is in DB
+    }
+});
         const db = firebase.database();
         // Fixed Admin Button Logic
         const urlParams = new URLSearchParams(window.location.search);
