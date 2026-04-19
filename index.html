@@ -196,33 +196,71 @@ footer {
     text-align: center;
 }
         /* This makes the box the "anchor" for the X button */
+/* The Popup Box with Breathing Effect */
 .popup-box {
-    position: relative; 
     background: white;
+    color: #333;
     padding: 40px;
     border-radius: 20px;
-    /* ... your other styles ... */
+    width: 90%;
+    max-width: 450px;
+    text-align: center;
+    position: relative;
+    /* Initial border and shadow */
+    border: 3px solid var(--gold);
+    box-shadow: 0 0 15px rgba(197, 160, 89, 0.4);
+    
+    /* THE BREATHING ANIMATION */
+    animation: popupBreathing 3s ease-in-out infinite, popupFadeIn 0.5s ease-out;
+}
+
+/* 1. The Breathing Logic (Glow expands and contracts) */
+@keyframes popupBreathing {
+    0% {
+        box-shadow: 0 0 15px rgba(197, 160, 89, 0.4);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(197, 160, 89, 0.8), 0 0 10px rgba(255, 255, 255, 0.3);
+        transform: scale(1.02); /* Slight pulse up */
+    }
+    100% {
+        box-shadow: 0 0 15px rgba(197, 160, 89, 0.4);
+        transform: scale(1);
+    }
+}
+
+/* 2. Entrance Animation (Smooth fade when page opens) */
+@keyframes popupFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* This moves the X to the top right corner */
 .close-popup {
     position: absolute;
-    top: 15px;      /* Distance from the top edge */
-    right: 20px;    /* Distance from the right edge */
-    font-size: 28px;
-    font-weight: bold;
-    background: none;
+    top: 15px;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+    background: #f1f1f1;
+    border-radius: 50%; /* Circle shape */
     border: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
     cursor: pointer;
-    color: #666;    /* Subtle grey color */
-    line-height: 1;
-    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
 }
 
 .close-popup:hover {
-    color: #dc2626; /* Turns red when parents hover over it */
+    background: #dc2626;
+    color: white;
+    transform: rotate(90deg); /* Modern spin effect on hover */
 }
-
         /* --- ADMIN PANEL --- */
         #adminPanel { display: none; width: 95%; max-width: 1450px; margin: 40px auto; background: white; color: #333; padding: 25px; border-radius: 15px; overflow-x: auto; box-shadow: 0 0 40px rgba(212,175,55,0.2); }
         .admin-table { width: 100%; border-collapse: collapse; min-width: 1200px; }
