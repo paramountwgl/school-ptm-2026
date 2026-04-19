@@ -116,6 +116,15 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        function updateLiveToken(tokenNumber) {
+    db.ref('current_meeting_token').set(tokenNumber)
+        .then(() => {
+            alert("Live display updated to Token #" + tokenNumber);
+        })
+        .catch((error) => {
+            console.error("Error updating live token: ", error);
+        });
+}
 
         function loadData() {
             db.ref('ptm_registrations').on('value', (snapshot) => {
@@ -151,10 +160,19 @@
                             <td>${val.parentName}</td>
                             <td>${val.phone}</td>
                             <td>${val.attendance}</td>
-                            <td>
-                                <button onclick="sendWA('${val.phone}', '${val.parentName}')" style="background:#25D366; color:white; border:none; padding:8px 10px; border-radius:5px; cursor:pointer;"><i class="fab fa-whatsapp"></i></button>
-                                <button onclick="deleteEntry('${val.key}')" style="background:#dc2626; color:white; border:none; padding:8px 10px; border-radius:5px; cursor:pointer; margin-left:5px;"><i class="fas fa-trash"></i></button>
-                            </td>
+                           <td>
+    <button onclick="updateLiveToken('${val.token}')" style="background:#22c55e; color:white; border:none; padding:8px 10px; border-radius:5px; cursor:pointer; font-weight:bold; margin-right:5px;">
+        <i class="fas fa-bullhorn"></i> CALL
+    </button>
+
+    <button onclick="sendWA('${val.phone}', '${val.parentName}')" style="background:#25D366; color:white; border:none; padding:8px 10px; border-radius:5px; margin-right:5px;">
+        <i class="fab fa-whatsapp"></i>
+    </button>
+    
+    <button onclick="deleteEntry('${val.key}')" style="background:#dc2626; color:white; border:none; padding:8px 10px; border-radius:5px;">
+        <i class="fas fa-trash"></i>
+    </button>
+</td>
                         </tr>
                     `;
                 });
