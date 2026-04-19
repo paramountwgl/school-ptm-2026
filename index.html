@@ -125,6 +125,8 @@
             <div class="school-name-box">
                 <div class="name-main">PARAMOUNT</div>
                 <div class="name-sub">ENGLISH MEDIUM SCHOOL</div>
+                <a href="admin.html" id="hiddenAdminBtn" style="display:none; background: var(--gold); color: black; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.8rem; margin-left: 20px; border: 2px solid black;">
+            <i class="fas fa-user-shield"></i> OPEN ADMIN PANEL  </a>
             </div>
         </div>
         <div id="adminIndicator" style="display:none; color: var(--gold); font-weight: bold;"><i class="fas fa-user-shield"></i> ADMIN MODE</div>
@@ -271,6 +273,14 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        // Hidden Admin Button Logic
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('admin') === 'true') {
+    const adminBtn = document.getElementById('hiddenAdminBtn');
+    if (adminBtn) {
+        adminBtn.style.display = 'inline-block';
+    }
+}
 
         function updateChildFields() {
             const count = document.getElementById('childCount').value;
