@@ -682,6 +682,15 @@ const timer = setInterval(function() {
         // ... etc
     }
 }, 1000);
+        function closeNotice() {
+        console.log("Closing the popup..."); // This helps you test it
+        const popup = document.getElementById("noticePopup");
+        if (popup) {
+            popup.style.display = "none";
+        } else {
+            console.error("Could not find the element with ID 'noticePopup'");
+        }
+    }
     </script>
 </body>
 </html>
