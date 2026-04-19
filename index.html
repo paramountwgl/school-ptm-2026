@@ -274,22 +274,19 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-const urlParams = new URLSearchParams(window.location.search);
+const db = firebase.database();
+
+        // Fixed Admin Button Logic
+        const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('admin') === 'true') {
             const adminBtn = document.getElementById('hiddenAdminBtn');
-            if (adminBtn) {
-                adminBtn.style.display = 'inline-block';
-            }
+            const indicator = document.getElementById('adminIndicator');
+            if (adminBtn) adminBtn.style.display = 'inline-block';
+            if (indicator) indicator.style.display = 'none';
         }
-            // Optional: Hide the old admin indicator if it exists to avoid clutter
-            const indicator = document.getElementById('adminIndicator');
-            if (indicator) indicator.style.display = 'none';
-        
-            // Optional: Hide the old admin indicator if it exists to avoid clutter
-            const indicator = document.getElementById('adminIndicator');
-            if (indicator) indicator.style.display = 'none';
-        
 
+        function updateChildFields() {
+            // ... (rest of your code)
 
         function updateChildFields() {
             const count = document.getElementById('childCount').value;
