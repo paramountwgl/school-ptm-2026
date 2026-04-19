@@ -54,6 +54,14 @@ body {
     z-index: 1000;
     border-bottom: none !important;
 }
+        .premium-divider {
+    height: 3px;
+    width: 120px;
+    background: var(--gold);
+    margin: 15px auto 40px auto;
+    border-radius: 50px;
+    box-shadow: 0 0 20px var(--gold), 0 0 10px #fff; /* Deep Glow */
+}
 .header-content {
     display: flex;
     align-items: center;
@@ -227,9 +235,42 @@ footer {
 
         /* --- EXPLORE SECTION --- */
         .section-padding { padding: 80px 10%; text-align: center; background: #020617; }
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 50px; }
-        .card { background: rgba(255, 255, 255, 0.03); padding: 40px 25px; border-radius: 15px; border: 1px solid rgba(212, 175, 55, 0.2); backdrop-filter: blur(10px); transition: 0.4s; display: flex; flex-direction: column; align-items: center; min-height: 250px; justify-content: center; }
-        .card i { font-size: 3rem; color: var(--gold); margin-bottom: 20px; }
+        .features-grid {
+    display: flex;             /* Lines cards up horizontally */
+    gap: 20px;
+    padding: 20px 5%;
+    overflow-x: auto;          /* Enables swiping */
+    scroll-snap-type: x mandatory; /* Makes cards 'snap' into place */
+    scrollbar-width: none;     /* Hides scrollbar on Firefox */
+}
+
+.features-grid::-webkit-scrollbar {
+    display: none;             /* Hides scrollbar on Chrome/Safari */
+}
+
+.card {
+    flex: 0 0 85%;             /* Makes card take up 85% of screen width on mobile */
+    scroll-snap-align: center; /* Snaps card to middle of screen */
+    background: rgba(255, 255, 255, 0.05);
+    padding: 40px 25px;
+    border-radius: 20px;
+    border: 1px solid rgba(197, 160, 89, 0.2);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: 0.3s;
+}
+
+/* This fixes the desktop view so it doesn't scroll on big screens */
+@media (min-width: 1024px) {
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        overflow-x: hidden;
+    }
+    .card { flex: unset; }
+}
         .card h3 { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--gold); margin-bottom: 15px; }
         .card p { font-size: 0.9rem; color: #cbd5e1; line-height: 1.6; }
 
@@ -416,16 +457,19 @@ footer {
             </form>
         </div>
     </section>
+<section class="section-padding" id="exploreSection">
+    <h2 style="font-family: 'Cinzel', serif; color: var(--gold); font-size: 2rem; letter-spacing: 2px;">
+        EXPLORE OUR EXCELLENCE
+    </h2>
+    <div class="premium-divider"></div>
 
-    <section class="section-padding" id="exploreSection">
-        <h2 style="font-family: 'Cinzel', serif; color: var(--gold); font-size: 2.2rem; margin-bottom: 40px;">Explore Our Excellence</h2>
-        <div class="features-grid">
-            <div class="card"><i class="fas fa-rocket"></i><h3>IIT Foundation</h3><p>Advanced coaching starting from Grade 5.</p></div>
-            <div class="card"><i class="fas fa-user-graduate"></i><h3>Expert Faculty</h3><p>Qualified educators dedicated to success.</p></div>
-            <div class="card"><i class="fas fa-bus"></i><h3>Bus Facility</h3><p>Safe and efficient transportation.</p></div>
-            <div class="card"><i class="fas fa-trophy"></i><h3>Holistic Growth</h3><p>Character development and leadership.</p></div>
-        </div>
-    </section>
+    <div class="features-grid">
+        <div class="card"><i class="fas fa-rocket"></i><h3>IIT Foundation</h3><p>Advanced coaching starting from Grade 5.</p></div>
+        <div class="card"><i class="fas fa-user-graduate"></i><h3>Expert Faculty</h3><p>Qualified educators dedicated to success.</p></div>
+        <div class="card"><i class="fas fa-bus"></i><h3>Bus Facility</h3><p>Safe and efficient transportation.</p></div>
+        <div class="card"><i class="fas fa-trophy"></i><h3>Holistic Growth</h3><p>Character development and leadership.</p></div>
+    </div>
+</section>
 
     <div id="tokenModal">
         <div class="modal-content">
