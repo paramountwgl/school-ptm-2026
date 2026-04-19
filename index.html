@@ -237,18 +237,11 @@ footer {
 /* The Popup Box with Breathing Effect */
 /* 1. THE OVERLAY (Blurs everything) */
 .popup-overlay {
-    position: fixed; /* Fixed stays in place even if you scroll */
+    display: none; /* Add this line to hide it by default */
+    position: fixed; 
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(2, 6, 23, 0.7); /* Dark semi-transparent tint */
-    backdrop-filter: blur(12px);    /* Strong premium blur */
-    -webkit-backdrop-filter: blur(12px);
-    display: flex;
-    justify-content: center; /* Centers horizontally */
-    align-items: center;     /* Centers vertically */
-    z-index: 99999;          /* Ensures it's above the header and everything else */
+    /* ... keep your other existing styles (blur, width, etc.) ... */
 }
 
 /* 2. THE PREMIUM BOX */
@@ -550,8 +543,8 @@ footer {
             <div class="token-display-box"><div class="token-display" id="finalToken">--</div></div>
             <div class="alert-text-area"><i class="fas fa-camera"></i> PLEASE TAKE A SCREENSHOT!</div>
              <p style="font-size: 0.85rem; color: #777; margin-bottom: 30px;">Show this to the staff to meet the Correspondent Sir.</p>
-           <button class="finish-btn" onclick="location.reload()">Finish</button>
-           <button class="finish-btn" onclick="resetAfterRegistration()">Finish</button>
+          <button class="finish-btn" onclick="location.reload()">Finish</button>
+          <button class="finish-btn" onclick="document.getElementById('tokenModal').style.display='none'">Finish</button>
         </div>
     </div>
 
@@ -755,16 +748,19 @@ const timer = setInterval(function() {
         // ... etc
     }
 }, 1000);
-       // Check if they have already seen the notice in this session
-window.onload = function() {
-    if (sessionStorage.getItem('noticeSeen') === 'true') {
-        document.getElementById("noticePopup").style.display = "none";
+      // Run this as soon as the page is ready
+document.addEventListener("DOMContentLoaded", function() {
+    // Check if they have already seen the notice in this session
+    if (sessionStorage.getItem('noticeSeen') !== 'true') {
+        // Only show it if they haven't seen it
+        document.getElementById("noticePopup").style.display = "flex";
     }
-};
+});
 
 function closeNotice() {
     document.getElementById("noticePopup").style.display = "none";
-    sessionStorage.setItem('noticeSeen', 'true'); // Remembers they closed it
+    // Save to memory that they closed it
+    sessionStorage.setItem('noticeSeen', 'true');
 }
     </script>
 </body>
