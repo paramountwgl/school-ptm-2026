@@ -274,14 +274,16 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-// Hidden Admin Button Logic
 const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get('admin') === 'true') {
-    const adminBtn = document.getElementById('hiddenAdminBtn');
-    if (adminBtn) {
-        adminBtn.style.display = 'block'; // Shows the button in the right corner
-    }
-}
+        if (urlParams.get('admin') === 'true') {
+            const adminBtn = document.getElementById('hiddenAdminBtn');
+            if (adminBtn) {
+                adminBtn.style.display = 'inline-block';
+            }
+            // Optional: Hide the old admin indicator if it exists to avoid clutter
+            const indicator = document.getElementById('adminIndicator');
+            if (indicator) indicator.style.display = 'none';
+        }
             // Optional: Hide the old admin indicator if it exists to avoid clutter
             const indicator = document.getElementById('adminIndicator');
             if (indicator) indicator.style.display = 'none';
