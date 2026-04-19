@@ -550,7 +550,8 @@ footer {
             <div class="token-display-box"><div class="token-display" id="finalToken">--</div></div>
             <div class="alert-text-area"><i class="fas fa-camera"></i> PLEASE TAKE A SCREENSHOT!</div>
              <p style="font-size: 0.85rem; color: #777; margin-bottom: 30px;">Show this to the staff to meet the Correspondent Sir.</p>
-            <button class="finish-btn" onclick="location.reload()">Finish</button>
+           <button class="finish-btn" onclick="location.reload()">Finish</button>
+           <button class="finish-btn" onclick="resetAfterRegistration()">Finish</button>
         </div>
     </div>
 
@@ -607,6 +608,23 @@ db.ref('current_meeting_token').on('value', (snapshot) => {
             if (adminBtn) adminBtn.style.display = 'inline-block';
             if (indicator) indicator.style.display = 'none';
         }
+        function resetAfterRegistration() {
+    // Hide the Token Modal
+    document.getElementById('tokenModal').style.display = 'none';
+    
+    // Clear the form fields
+    document.getElementById('ptmForm').reset();
+    
+    // Reset the child container to just 1 child
+    document.getElementById('childCount').value = "1";
+    updateChildFields();
+    
+    // Scroll parents back to the top smoothly
+    window.scrollTo({top: 0, behavior: 'smooth'});
+    
+    // Mark notice as seen so it doesn't pop up again
+    sessionStorage.setItem('noticeSeen', 'true');
+}
 
         function updateChildFields() {
             const count = document.getElementById('childCount').value;
@@ -737,15 +755,17 @@ const timer = setInterval(function() {
         // ... etc
     }
 }, 1000);
-        function closeNotice() {
-        console.log("Closing the popup..."); // This helps you test it
-        const popup = document.getElementById("noticePopup");
-        if (popup) {
-            popup.style.display = "none";
-        } else {
-            console.error("Could not find the element with ID 'noticePopup'");
-        }
+       // Check if they have already seen the notice in this session
+window.onload = function() {
+    if (sessionStorage.getItem('noticeSeen') === 'true') {
+        document.getElementById("noticePopup").style.display = "none";
     }
+};
+
+function closeNotice() {
+    document.getElementById("noticePopup").style.display = "none";
+    sessionStorage.setItem('noticeSeen', 'true'); // Remembers they closed it
+}
     </script>
 </body>
 </html>
