@@ -122,37 +122,45 @@ footer {
     margin: 0 12px;
     transition: 0.3s;
 }
-        /* --- Premium Announcement Banner --- */
+       /* --- Premium Navy & Gold Announcement Banner --- */
 .announcement-banner {
-    background: #ffcc00; /* Paramount Yellow */
-    color: #000;
-    padding: 10px 0;
-    font-weight: bold;
-    font-size: 0.9rem;
+    background: #020617; /* Deep Navy Blue to match your theme */
+    color: var(--gold);  /* Gold text for that premium look */
+    padding: 12px 0;
+    font-weight: 600;
+    font-size: 0.95rem;
     overflow: hidden;
     position: relative;
-    z-index: 999; /* Just below the header */
+    z-index: 999;
+    /* Gold glow borders to separate it from the header and hero */
+    border-top: 1px solid rgba(197, 160, 89, 0.3);
     border-bottom: 2px solid var(--gold);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
 }
 
 .marquee-content {
     display: inline-block;
     white-space: nowrap;
-    /* Changed from 20s to 40s to make it slower */
-    animation: marquee 40s linear infinite; 
+    animation: marquee 45s linear infinite; /* Kept it slow for readability */
     padding-left: 100%;
 }
 
 .marquee-content span {
-    margin-right: 50px;
+    margin-right: 80px; /* Space between repeating messages */
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Stops scrolling on hover so parents can read clearly */
+.announcement-banner:hover .marquee-content {
+    animation-play-state: paused;
 }
 
 @keyframes marquee {
     0% { transform: translateX(0); }
     100% { transform: translateX(-100%); }
 }
-
 /* Ensure the floating header doesn't cover the banner */
 .hero {
     padding-top: 180px !important; 
@@ -298,10 +306,10 @@ footer {
 </header>
     <div class="announcement-banner">
     <div class="marquee-content">
-        <span>📢 ATTENTION PARENTS: Registration for PTM (2026) will strictly CLOSE at 12:00 PM on April 30th, 2026.</span>
-        <span>⚠️ HURRY UP! Register now and secure your meeting token.</span>
-        <span>📢 ATTENTION PARENTS: Registration for PTM (2026) will strictly CLOSE at 12:00 PM on April 30th, 2026.</span>
-        <span>⚠️ HURRY UP! Register now and secure your meeting token.</span>
+        <span><i class="fas fa-bell"></i> 📢 ATTENTION PARENTS: Registration for PTM (2026) will strictly CLOSE at 12:00 PM on April 30th, 2026.</span>
+        <span><i class="fas fa-clock"></i> ⚠️ HURRY UP! Register now and secure your meeting token.</span>
+        <span><i class="fas fa-bell"></i> 📢 ATTENTION PARENTS: Registration for PTM (2026) will strictly CLOSE at 12:00 PM on April 30th, 2026.</span>
+        <span><i class="fas fa-clock"></i> ⚠️ HURRY UP! Register now and secure your meeting token.</span>
     </div>
 </div>
 
