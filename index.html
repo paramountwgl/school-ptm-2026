@@ -387,7 +387,7 @@
         }
     });
 });
-            } else {
+             else {
                 // NEW RECORD - Get new token
                 db.ref('ptm_token_counter').transaction(c => (c || 0) + 1, (err, comm, snap) => {
                     if (comm) {
