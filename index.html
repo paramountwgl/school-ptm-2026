@@ -341,53 +341,52 @@
             }
         }
 
-        document.getElementById('ptmForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            const phone = document.getElementById('phoneNumber').value;
-            const parentName = document.getElementById('parentName').value;
-            
-            btn.disabled = true;
-            btn.innerText = "Processing...";
+       document.getElementById('ptmForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const phone = document.getElementById('phoneNumber').value;
+    const parentName = document.getElementById('parentName').value;
+    
+    btn.disabled = true;
+    btn.innerText = "Processing...";
 
-            // Gather child data
-            const names = document.querySelectorAll('.child-name');
-            const classes = document.querySelectorAll('.child-class');
-            let studentArray = [];
-            for (let i = 0; i < names.length; i++) studentArray.push({ name: names[i].value, className: classes[i].value });
+    // Gather child data
+    const names = document.querySelectorAll('.child-name');
+    const classes = document.querySelectorAll('.child-class');
+    let studentArray = [];
+    for (let i = 0; i < names.length; i++) {
+        studentArray.push({ name: names[i].value, className: classes[i].value });
+    }
 
-            // 1. Check if phone number already exists
-            const snapshot = await db.ref('ptm_registrations').once('value');
-            let existingKey = null;
-            let existingToken = null;
+    // NEW LOGIC: Always generate a new token and a unique ID (Date.now())
+    // This prevents overwriting and makes them appear "down by down"
+    db.ref('ptm_token_counter').transaction(c => (c || 0) + 1, (err, comm, snap) => {
+        if (comm) {
+            const tkn = snap.val();
+            // Use Date.now() so every submission is a unique row
+            const uniqueID = "PTM-" + Date.now(); 
 
-            snapshot.forEach(child => {
-                if (child.val().phone === phone) {
-                    existingKey = child.key;
-                    existingToken = child.val().token;
-                }
+            const entry = { 
+                parentName: parentName, 
+                students: studentArray, 
+                phone: phone, 
+                attendance: document.getElementById('attendance').value, 
+                visited: false, 
+                token: tkn, 
+                timestamp: new Date().toLocaleString() 
+            };
+
+            db.ref('ptm_registrations/' + uniqueID).set(entry).then(() => { 
+                document.getElementById('modalHeader').innerText = "Registration Successful!";
+                document.getElementById('modalSubText').innerText = "Your official meeting token number is:";
+                document.getElementById('finalToken').innerText = tkn; 
+                document.getElementById('tokenModal').style.display = 'flex'; 
+                btn.disabled = false;
+                btn.innerText = "GENERATE TOKEN";
             });
-
-            if (existingKey) {
-                // UPDATE RECORD
-                const proceed = confirm("A token (#" + existingToken + ") is already registered to this phone number. Do you want to update the details and keep the same token?");
-                if (proceed) {
-                    const updateData = {
-                        parentName: parentName,
-                        students: studentArray,
-                        attendance: document.getElementById('attendance').value,
-                        timestamp: "Updated: " + new Date().toLocaleString()
-                    };
-                    await db.ref('ptm_registrations/' + existingKey).update(updateData);
-                    
-                    document.getElementById('modalHeader').innerText = "Details Updated!";
-                    document.getElementById('modalSubText').innerText = "Your details were updated. Your token number remains:";
-                    document.getElementById('finalToken').innerText = existingToken;
-                    document.getElementById('tokenModal').style.display = 'flex';
-                } else {
-                    btn.disabled = false;
-                    btn.innerText = "GENERATE / UPDATE TOKEN";
-                }
+        }
+    });
+});
             } else {
                 // NEW RECORD - Get new token
                 db.ref('ptm_token_counter').transaction(c => (c || 0) + 1, (err, comm, snap) => {
