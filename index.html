@@ -195,6 +195,33 @@ footer {
     width: 100%;
     text-align: center;
 }
+        /* This makes the box the "anchor" for the X button */
+.popup-box {
+    position: relative; 
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    /* ... your other styles ... */
+}
+
+/* This moves the X to the top right corner */
+.close-popup {
+    position: absolute;
+    top: 15px;      /* Distance from the top edge */
+    right: 20px;    /* Distance from the right edge */
+    font-size: 28px;
+    font-weight: bold;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;    /* Subtle grey color */
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.close-popup:hover {
+    color: #dc2626; /* Turns red when parents hover over it */
+}
 
         /* --- ADMIN PANEL --- */
         #adminPanel { display: none; width: 95%; max-width: 1450px; margin: 40px auto; background: white; color: #333; padding: 25px; border-radius: 15px; overflow-x: auto; box-shadow: 0 0 40px rgba(212,175,55,0.2); }
@@ -276,9 +303,23 @@ footer {
             .token-badge { background: transparent !important; color: #000 !important; border: 1px solid #000 !important; }
             h2.admin-indicator { display: none !important; }
         }
+        function closeNotice() {
+    const popup = document.getElementById("noticePopup");
+    popup.style.display = "none";
+}
     </style>
 </head>
 <body>
+    <div id="noticePopup" class="popup-overlay">
+    <div class="popup-box">
+        <button class="close-popup" onclick="closeNotice()">&times;</button>
+        
+        <i class="fas fa-exclamation-circle popup-icon"></i>
+        <h2>IMPORTANT NOTICE</h2>
+        <p>Registration For PTM(2026) will be closed at 12:00 PM on April 30th 2026</p>
+        <button class="popup-btn" onclick="closeNotice()"> Hurry Up and REGISTER NOW</button>
+    </div>
+</div>
 
 <header>
     <div class="logo-container">
