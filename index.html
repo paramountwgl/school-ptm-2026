@@ -274,8 +274,6 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-const db = firebase.database();
-
         // Fixed Admin Button Logic
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('admin') === 'true') {
@@ -284,9 +282,6 @@ const db = firebase.database();
             if (adminBtn) adminBtn.style.display = 'inline-block';
             if (indicator) indicator.style.display = 'none';
         }
-
-        function updateChildFields() {
-            // ... (rest of your code)
 
         function updateChildFields() {
             const count = document.getElementById('childCount').value;
