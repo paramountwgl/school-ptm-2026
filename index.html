@@ -55,8 +55,11 @@ body {
     flex-wrap: wrap; /* Allows logo/text to stack if screen is tiny */
 }
 .header-logo {
-    height: 60px;
+    height: 55px;         /* Slightly smaller to fit better */
     width: auto;
+    object-fit: contain;  /* Keeps the logo's proportions perfect */
+    padding: 5px;         /* Adds breathing room around the logo */
+}
 }
 .main-title {
     color: var(--gold);
