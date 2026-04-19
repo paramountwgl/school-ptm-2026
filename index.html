@@ -122,6 +122,40 @@ footer {
     margin: 0 12px;
     transition: 0.3s;
 }
+        /* --- Premium Announcement Banner --- */
+.announcement-banner {
+    background: #ffcc00; /* Paramount Yellow */
+    color: #000;
+    padding: 10px 0;
+    font-weight: bold;
+    font-size: 0.9rem;
+    overflow: hidden;
+    position: relative;
+    z-index: 999; /* Just below the header */
+    border-bottom: 2px solid var(--gold);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.marquee-content {
+    display: inline-block;
+    white-space: nowrap;
+    animation: marquee 20s linear infinite;
+    padding-left: 100%;
+}
+
+.marquee-content span {
+    margin-right: 50px;
+}
+
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
+/* Ensure the floating header doesn't cover the banner */
+.hero {
+    padding-top: 180px !important; 
+}
 /* --- MOBILE SPECIFIC FIXES --- */
 @media (max-width: 600px) {
     .main-title {
@@ -261,6 +295,14 @@ footer {
     </div>
     <div id="adminIndicator" style="display:none; color: var(--gold); font-weight: bold;"><i class="fas fa-user-shield"></i> ADMIN MODE</div>
 </header>
+    <div class="announcement-banner">
+    <div class="marquee-content">
+        <span>📢 ATTENTION PARENTS: Registration for PTM (2026) will strictly CLOSE at 12:00 PM on April 30th, 2026.</span>
+        <span>⚠️ HURRY UP! Register now and secure your meeting token.</span>
+        <span>📢 ATTENTION PARENTS: Registration for PTM (2026) will strictly CLOSE at 12:00 PM on April 30th, 2026.</span>
+        <span>⚠️ HURRY UP! Register now and secure your meeting token.</span>
+    </div>
+</div>
 
     <section class="hero" id="heroSection">
         <p style="font-family: 'Great Vibes', cursive; font-size: 3rem; color: var(--gold); margin-bottom: 5px;">Invitation To</p>
