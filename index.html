@@ -166,23 +166,33 @@ footer {
         /* Update these specific styles in your <style> tag */
 .countdown-wrapper { 
     display: flex; 
-    gap: 15px; 
-    margin-top: 15px; 
-    background: rgba(255, 255, 255, 0.05); 
-    padding: 20px; 
-    border-radius: 15px; 
-    border: 2px solid var(--gold); 
-    box-shadow: var(--box-glow); 
+    gap: 20px; /* Increased gap slightly */
+    margin-top: 25px; 
+    padding: 10px; /* Space for the glow */
     justify-content: center;
+    flex-wrap: wrap; /* Ensures it looks good on small phones */
 }
 
 .countdown-item { 
     display: flex; 
     flex-direction: column; 
     align-items: center; 
-    width: 80px; /* FIXED WIDTH stops the box from changing size */
+    width: 80px;
+    background: rgba(2, 6, 23, 0.8); /* Darker background to make the glow pop */
+    border: 2px solid var(--gold); 
+    padding: 15px; 
+    border-radius: 15px;
+    /* This creates the Premium Glow */
+    box-shadow: 0 0 15px rgba(197, 160, 89, 0.5), 
+                inset 0 0 10px rgba(197, 160, 89, 0.2); 
+    transition: transform 0.3s ease;
 }
 
+/* Optional: Adds a slight pulse effect when parents hover over the boxes */
+.countdown-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 25px rgba(197, 160, 89, 0.8);
+}
 .countdown-number { 
     font-family: 'Cinzel', serif; 
     font-size: 1.8rem; 
