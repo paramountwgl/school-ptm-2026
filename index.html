@@ -165,33 +165,26 @@ footer {
 
         /* Update these specific styles in your <style> tag */
 .countdown-wrapper { 
-    display: flex; 
-    gap: 20px; /* Increased gap slightly */
-    margin-top: 25px; 
-    padding: 10px; /* Space for the glow */
+    display: inline-flex; /* Keeps the box sized to the content */
+    gap: 25px; 
+    margin: 30px auto; 
+    padding: 20px 40px; 
+    background: rgba(2, 6, 23, 0.5); /* Semi-transparent background */
+    backdrop-filter: blur(10px);    /* Glass effect */
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 2px solid var(--gold);
+    /* THE PREMIUM GLOW */
+    box-shadow: 0 0 20px rgba(197, 160, 89, 0.6), 
+                inset 0 0 15px rgba(197, 160, 89, 0.3);
     justify-content: center;
-    flex-wrap: wrap; /* Ensures it looks good on small phones */
+    align-items: center;
 }
-
 .countdown-item { 
     display: flex; 
     flex-direction: column; 
     align-items: center; 
-    width: 80px;
-    background: rgba(2, 6, 23, 0.8); /* Darker background to make the glow pop */
-    border: 2px solid var(--gold); 
-    padding: 15px; 
-    border-radius: 15px;
-    /* This creates the Premium Glow */
-    box-shadow: 0 0 15px rgba(197, 160, 89, 0.5), 
-                inset 0 0 10px rgba(197, 160, 89, 0.2); 
-    transition: transform 0.3s ease;
-}
-
-/* Optional: Adds a slight pulse effect when parents hover over the boxes */
-.countdown-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0 25px rgba(197, 160, 89, 0.8);
+    min-width: 60px;
 }
 .countdown-number { 
     font-family: 'Cinzel', serif; 
