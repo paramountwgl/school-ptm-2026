@@ -474,13 +474,29 @@ footer {
         function updateChildFields() {
             const count = document.getElementById('childCount').value;
             const container = document.getElementById('childrenContainer');
-            const classesHTML = <option value="" disabled selected>Select Class</option><option value="Pre-KG (Diamond)">Pre-KG (Diamond)</option><option value="KG-1 (Ruby)">KG-1 (Ruby)</option><option value="KG-2 (Amber)">KG-2 (Amber)</option><option value="Grade-1 (Opal)">Grade-1 (Opal)</option><option value="Grade-2 (Emerald)">Grade-2 (Emerald)</option><option value="Grade-3 (Crystal)">Grade-3 (Crystal)</option><option value="Grade-4 (Citrine)">Grade-4 (Citrine)</option><option value="Grade-5 (Moonstone)">Grade-5 (Moonstone)</option><option value="Grade-6 (Alluri)">Grade-6 (Alluri)</option><option value="Grade-7 (Kalam)">Grade-7 (Kalam)</option><option value="Grade-8 (Bhagat)">Grade-8 (Bhagat)</option>;
-            container.innerHTML = "";
-            for (let i = 1; i <= count; i++) {
-                container.innerHTML += <div class="child-entry"><label>Child ${i}: Name</label><input type="text" class="child-name" placeholder="Student Name" required style="margin-bottom:10px;"><label>Child ${i}: Class</label><select class="child-class" required>${classesHTML}</select></div>;
-            }
-        }
-
+           const classesHTML = `<option value="" disabled selected>Select Class</option>
+                        <option value="Pre-KG (Diamond)">Pre-KG (Diamond)</option>
+                        <option value="KG-1 (Ruby)">KG-1 (Ruby)</option>
+                        <option value="KG-2 (Amber)">KG-2 (Amber)</option>
+                        <option value="Grade-1 (Opal)">Grade-1 (Opal)</option>
+                        <option value="Grade-2 (Emerald)">Grade-2 (Emerald)</option>
+                        <option value="Grade-3 (Crystal)">Grade-3 (Crystal)</option>
+                        <option value="Grade-4 (Citrine)">Grade-4 (Citrine)</option>
+                        <option value="Grade-5 (Moonstone)">Grade-5 (Moonstone)</option>
+                        <option value="Grade-6 (Alluri)">Grade-6 (Alluri)</option>
+                        <option value="Grade-7 (Kalam)">Grade-7 (Kalam)</option>
+                        <option value="Grade-8 (Bhagat)">Grade-8 (Bhagat)</option>`;
+           container.innerHTML = "";
+    for (let i = 1; i <= count; i++) {
+        // THE FIX: Wrap this template in backticks too
+        container.innerHTML += `<div class="child-entry">
+            <label>Child ${i}: Name</label>
+            <input type="text" class="child-name" placeholder="Student Name" required style="margin-bottom:10px;">
+            <label>Child ${i}: Class</label>
+            <select class="child-class" required>${classesHTML}</select>
+        </div>`;
+    }
+}
         
       document.getElementById('ptmForm').addEventListener('submit', async function(e) {
             e.preventDefault();
