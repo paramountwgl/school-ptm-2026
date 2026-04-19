@@ -85,14 +85,7 @@
             header, .hero, .registration-section, #exploreSection, footer, .admin-actions, #adminIndicator, .finish-btn, .alert-text-area, #modalHeader {
                 display: none !important;
             }
-            #adminPanel {
-                display: block !important;
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                box-shadow: none !important;
-                background: white !important;
-            }
+           
             #printOnlyHeader {
                 display: block !important;
                 text-align: center;
@@ -289,58 +282,7 @@
             }
         }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('admin') === 'true') {
-            document.getElementById('registerSection').style.display = 'none';
-            document.getElementById('heroSection').style.display = 'none';
-            document.getElementById('exploreSection').style.display = 'none';
-            document.getElementById('adminPanel').style.display = 'block';
-            document.getElementById('adminIndicator').style.display = 'block';
-            loadAdminData();
-        }
-
-        function loadAdminData() {
-            db.ref('ptm_registrations').on('value', (snapshot) => {
-                const table = document.getElementById('adminTableBody');
-                table.innerHTML = "";
-                let records = [];
-                snapshot.forEach(child => records.push({key: child.key, ...child.val()}));
-                records.sort((a,b) => Number(a.token) - Number(b.token));
-                records.forEach(val => {
-                    let students = "";
-                    val.students.forEach(s => students += `<div>• <b>${s.name}</b> (${s.className})</div>`);
-                    const rowBg = val.visited ? 'background: #e8f5e9;' : '';
-                    table.innerHTML += `<tr style="${rowBg}">
-                        <td style="text-align:center;"><input type="checkbox" ${val.visited ? 'checked' : ''} onclick="toggleVisit('${val.key}', this.checked)" style="transform:scale(1.3);"></td>
-                        <td><span class="token-badge">${val.token}</span></td>
-                        <td>${students}</td>
-                        <td>${val.parentName}</td>
-                        <td>${val.phone}</td>
-                        <td>${val.attendance}</td>
-                        <td>
-                            <button onclick="sendWhatsApp('${val.phone}', '${val.parentName}', ${val.visited || false})" style="background:#25D366; color:white; border:none; padding:8px 12px; border-radius:5px; cursor:pointer;"><i class="fab fa-whatsapp"></i></button>
-                            <button onclick="deleteRow('${val.key}')" style="background:#dc2626; color:white; border:none; padding:8px 12px; border-radius:5px; cursor:pointer; margin-left:5px;"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>`;
-                });
-            });
-        }
-
-        function toggleVisit(key, status) { db.ref('ptm_registrations/'+key).update({visited: status}); }
-        function deleteRow(key) { if(confirm("Delete this specific registration?")) { db.ref('ptm_registrations/'+key).remove(); } }
-        function sendWhatsApp(phone, parent, visited) {
-            const msg = visited ? `Dear ${parent}, thank you for attending the PTM today!` : `Dear ${parent}, we missed you at the PTM today. Please call the Correspondent Sir.`;
-            window.open(`https://wa.me/${phone.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`, '_blank');
-        }
-
-        function wipeData() {
-            if (prompt("Enter Password (PTM2026) to Wipe ALL Data:") === "PTM2026") {
-                db.ref('ptm_registrations').remove();
-                db.ref('ptm_token_counter').set(0);
-                alert("Database Wiped.");
-            }
-        }
-
+        
        document.getElementById('ptmForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const btn = document.getElementById('submitBtn');
