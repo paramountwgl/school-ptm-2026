@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PTM 2026 | Paramount English Medium School</title>
     <link rel="icon" type="image/png" href="School logo 2.png">
     
@@ -11,12 +11,126 @@
 
     <style>
         :root {
-            --gold: #D4AF37;
-            --space-dark: #020617;
-            --glass: rgba(255, 255, 255, 0.05);
-            --box-glow: 0 0 20px rgba(212, 175, 55, 0.4);
-        }
-
+    --header-bg: #030a1a;
+    --gold: #c5a059;
+    --white: #ffffff;
+    --light-bg: #f8f9fa;
+}
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    overflow-x: hidden; /* Prevents side-scrolling on mobile */
+    background-color: var(--light-bg);
+}
+/* Header Responsiveness */
+.school-header {
+    background-color: var(--header-bg);
+    padding: 15px 5%;
+    width: 100%;
+    text-align: center;
+}
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center for mobile */
+    gap: 15px;
+    flex-wrap: wrap; /* Allows logo/text to stack if screen is tiny */
+}
+.header-logo {
+    height: 60px;
+    width: auto;
+}
+.main-title {
+    color: var(--gold);
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+}
+.sub-title {
+    color: var(--white);
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+/* Hero & Countdown Responsiveness */
+.hero {
+    background: var(--header-bg);
+    padding: 60px 20px;
+    color: white;
+    text-align: center;
+}
+#countdown {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 25px;
+}
+.time-box {
+    background: rgba(197, 160, 89, 0.1);
+    border: 1px solid var(--gold);
+    padding: 10px;
+    border-radius: 8px;
+    min-width: 70px;
+}
+.time-box span {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--gold);
+}
+/* Explore Section Grid */
+.explore {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 40px 5%;
+}
+.feature-card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    text-align: center;
+}
+/* Footer Styling */
+footer {
+    background-color: var(--header-bg);
+    padding: 40px 20px;
+    text-align: center;
+    border-top: 2px solid var(--gold);
+}
+.social-icons a {
+    color: white;
+    font-size: 24px;
+    margin: 0 12px;
+    transition: 0.3s;
+}
+/* --- MOBILE SPECIFIC FIXES --- */
+@media (max-width: 600px) {
+    .main-title {
+        font-size: 1.4rem;
+    }
+    .sub-title {
+        font-size: 0.75rem;
+    }
+    .header-content {
+        flex-direction: column; /* Stack logo above text on small phones */
+        gap: 10px;
+    }
+    .time-box {
+        min-width: 60px;
+        padding: 8px;
+    }
+    .time-box span {
+        font-size: 1.2rem;
+    }
+    .social-icons a {
+        font-size: 22px;
+        margin: 0 10px;
+    }
+}
         body, html { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: var(--space-dark); color: white; scroll-behavior: smooth; overflow-x: hidden; }
 
         header { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: rgba(2, 6, 23, 0.9); backdrop-filter: blur(10px); border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
@@ -167,9 +281,22 @@
             <span class="ampersand-divider">&</span>
             <span class="event-title">ANNUAL RESULTS DAY <span class="year-highlight">(2026)</span></span>
         </div>
-        <div class="event-schedule">
-            <i class="far fa-calendar-alt" style="color: var(--gold);"></i> April 30, 2026 | 09:00 AM
-        </div>
+       <div class="event-schedule" style="display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 25px;">
+    <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: center;">
+        <span>
+            <i class="far fa-calendar-alt" style="color: var(--gold); margin-right: 5px;"></i> April 30, 2026
+        </span>
+        <span style="color: var(--gold); opacity: 0.5;">|</span>
+        <span>
+            <i class="far fa-clock" style="color: var(--gold); margin-right: 5px;"></i> 09:00 AM
+        </span>
+    </div>
+
+    <div style="font-size: 0.95rem; text-transform: none; opacity: 0.9; max-width: 90%; line-height: 1.4;">
+        <i class="fas fa-map-marker-alt" style="color: var(--gold); margin-right: 8px;"></i>
+        PARAMOUNT ENGLISH MEDIUM SCHOOL, Laxmipur, Warangal 506005
+    </div>
+</div>
         <div class="countdown-wrapper">
             <div class="countdown-item"><span class="countdown-number" id="days">00</span><span>Days</span></div>
             <div class="countdown-item"><span class="countdown-number" id="hours">00</span><span>Hrs</span></div>
@@ -284,7 +411,24 @@
         </div>
     </div>
 
-    <footer>&copy; 2026 PARAMOUNT ENGLISH MEDIUM SCHOOL | All Rights Reserved.</footer>
+    <footer>
+    <div class="footer-container">
+        <p class="copyright">
+            &copy; 2026, Paramount English Medium School. All Rights Reserved.
+        </p>
+
+        <h3 class="connect-text">Connect us on</h3>
+
+        <div class="social-icons">
+            <a href="PASTE_FACEBOOK_LINK_HERE" target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/paramount.07?igsh=M3RvdWV2dGpuaHNv" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://youtube.com/@paramountschoolwgl?si=Giai71CtdAJQgjIG" target="_blank"><i class="fab fa-youtube"></i></a>
+            <a href="https://wa.me/919000641355?text=hello!%20sir%20i%20want%20to%20know%20more%20about%20PARAMOUNT%20SCHOOL%20." target="_blank">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+        </div>
+    </div>
+</footer>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
