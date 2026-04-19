@@ -543,8 +543,7 @@ footer {
             <div class="token-display-box"><div class="token-display" id="finalToken">--</div></div>
             <div class="alert-text-area"><i class="fas fa-camera"></i> PLEASE TAKE A SCREENSHOT!</div>
              <p style="font-size: 0.85rem; color: #777; margin-bottom: 30px;">Show this to the staff to meet the Correspondent Sir.</p>
-          <button class="finish-btn" onclick="location.reload()">Finish</button>
-          <button class="finish-btn" onclick="document.getElementById('tokenModal').style.display='none'">Finish</button>
+          <button class="finish-btn" onclick="this.closest('#tokenModal').style.display='none'">Finish</button>
         </div>
     </div>
 
@@ -748,19 +747,20 @@ const timer = setInterval(function() {
         // ... etc
     }
 }, 1000);
-      // Run this as soon as the page is ready
+     // This function runs the moment the page is ready
 document.addEventListener("DOMContentLoaded", function() {
-    // Check if they have already seen the notice in this session
-    if (sessionStorage.getItem('noticeSeen') !== 'true') {
-        // Only show it if they haven't seen it
-        document.getElementById("noticePopup").style.display = "flex";
-    }
+    const notice = document.getElementById("noticePopup");
+    
+    // For testing: This will show the popup EVERY time you refresh 
+    // until we are sure it's working. 
+    notice.style.display = "flex"; 
 });
 
 function closeNotice() {
     document.getElementById("noticePopup").style.display = "none";
-    // Save to memory that they closed it
-    sessionStorage.setItem('noticeSeen', 'true');
+    // Once you are happy it's working, you can uncomment the line below 
+    // to make it stop appearing after the first time:
+    // sessionStorage.setItem('noticeSeen', 'true');
 }
     </script>
 </body>
