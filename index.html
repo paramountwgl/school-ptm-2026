@@ -125,12 +125,13 @@
         <div class="school-name-box">
             <div class="name-main">PARAMOUNT</div>
             <div class="name-sub">ENGLISH MEDIUM SCHOOL</div>
+             <a href="admin.html" id="hiddenAdminBtn" style="display:none; background: var(--gold); color: black; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.85rem; border: 2px solid #000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); white-space: nowrap;">
+        <i class="fas fa-user-shield"></i> OPEN ADMIN PANEL
+    </a>
         </div>
     </div>
 
-    <a href="admin.html" id="hiddenAdminBtn" style="display:none; background: var(--gold); color: black; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.85rem; border: 2px solid #000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); white-space: nowrap;">
-        <i class="fas fa-user-shield"></i> OPEN ADMIN PANEL
-    </a>
+   
 </header>
 
     <section class="hero" id="heroSection">
@@ -274,12 +275,14 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+// Hidden Admin Button Logic
 const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('admin') === 'true') {
-            const adminBtn = document.getElementById('hiddenAdminBtn');
-            if (adminBtn) {
-                adminBtn.style.display = 'inline-block';
-            }
+if (urlParams.get('admin') === 'true') {
+    const adminBtn = document.getElementById('hiddenAdminBtn');
+    if (adminBtn) {
+        adminBtn.style.display = 'block'; // Shows the button in the right corner
+    }
+}
             // Optional: Hide the old admin indicator if it exists to avoid clutter
             const indicator = document.getElementById('adminIndicator');
             if (indicator) indicator.style.display = 'none';
