@@ -197,46 +197,39 @@ footer {
 }
         /* This makes the box the "anchor" for the X button */
 /* The Popup Box with Breathing Effect */
+/* 1. THE OVERLAY (Blurs everything) */
+.popup-overlay {
+    position: fixed; /* Fixed stays in place even if you scroll */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(2, 6, 23, 0.7); /* Dark semi-transparent tint */
+    backdrop-filter: blur(12px);    /* Strong premium blur */
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    z-index: 99999;          /* Ensures it's above the header and everything else */
+}
+
+/* 2. THE PREMIUM BOX */
 .popup-box {
     background: white;
     color: #333;
-    padding: 40px;
-    border-radius: 20px;
+    padding: 40px 30px;
+    border-radius: 24px;
     width: 90%;
-    max-width: 450px;
+    max-width: 420px;
     text-align: center;
     position: relative;
-    /* Initial border and shadow */
     border: 3px solid var(--gold);
-    box-shadow: 0 0 15px rgba(197, 160, 89, 0.4);
-    
-    /* THE BREATHING ANIMATION */
-    animation: popupBreathing 3s ease-in-out infinite, popupFadeIn 0.5s ease-out;
+    box-shadow: 0 0 30px rgba(197, 160, 89, 0.5);
+    /* Breathing & Entrance Animation */
+    animation: popupFadeIn 0.5s ease-out, popupBreathing 3s ease-in-out infinite;
 }
 
-/* 1. The Breathing Logic (Glow expands and contracts) */
-@keyframes popupBreathing {
-    0% {
-        box-shadow: 0 0 15px rgba(197, 160, 89, 0.4);
-        transform: scale(1);
-    }
-    50% {
-        box-shadow: 0 0 30px rgba(197, 160, 89, 0.8), 0 0 10px rgba(255, 255, 255, 0.3);
-        transform: scale(1.02); /* Slight pulse up */
-    }
-    100% {
-        box-shadow: 0 0 15px rgba(197, 160, 89, 0.4);
-        transform: scale(1);
-    }
-}
-
-/* 2. Entrance Animation (Smooth fade when page opens) */
-@keyframes popupFadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* This moves the X to the top right corner */
+/* 3. THE "X" BUTTON IN THE CORNER */
 .close-popup {
     position: absolute;
     top: 15px;
@@ -244,22 +237,30 @@ footer {
     width: 35px;
     height: 35px;
     background: #f1f1f1;
-    border-radius: 50%; /* Circle shape */
+    border-radius: 50%;
     border: none;
     font-size: 20px;
-    font-weight: bold;
-    color: #333;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    transition: 0.3s;
 }
 
 .close-popup:hover {
     background: #dc2626;
     color: white;
-    transform: rotate(90deg); /* Modern spin effect on hover */
+}
+
+/* ANIMATIONS */
+@keyframes popupFadeIn {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popupBreathing {
+    0%, 100% { box-shadow: 0 0 15px rgba(197, 160, 89, 0.4); }
+    50% { box-shadow: 0 0 40px rgba(197, 160, 89, 0.8); }
 }
         /* --- ADMIN PANEL --- */
         #adminPanel { display: none; width: 95%; max-width: 1450px; margin: 40px auto; background: white; color: #333; padding: 25px; border-radius: 15px; overflow-x: auto; box-shadow: 0 0 40px rgba(212,175,55,0.2); }
@@ -342,22 +343,21 @@ footer {
             h2.admin-indicator { display: none !important; }
         }
         function closeNotice() {
-    const popup = document.getElementById("noticePopup");
-    popup.style.display = "none";
+    document.getElementById("noticePopup").style.display = "none";
 }
     </style>
 </head>
 <body>
     <div id="noticePopup" class="popup-overlay">
-    <div class="popup-box">
-        <button class="close-popup" onclick="closeNotice()">&times;</button>
-        
-        <i class="fas fa-exclamation-circle popup-icon"></i>
-        <h2>IMPORTANT NOTICE</h2>
-        <p>Registration For PTM(2026) will be closed at 12:00 PM on April 30th 2026</p>
-        <button class="popup-btn" onclick="closeNotice()"> Hurry Up and REGISTER NOW</button>
+        <div class="popup-box">
+            <button class="close-popup" onclick="closeNotice()">&times;</button>
+            <i class="fas fa-exclamation-circle" style="color: #dc2626; font-size: 3rem; margin-bottom: 15px;"></i>
+            <h2 style="font-family: 'Cinzel', serif; margin-bottom: 15px;">IMPORTANT NOTICE</h2>
+            <p style="margin-bottom: 15px; font-weight: 500;">Registration for PTM (2026) will be strictly closed at 12:00 PM on April 30th 2026.</p>
+            <p style="color: #dc2626; font-weight: bold; margin-bottom: 20px;">Hurry Up and REGISTER NOW!</p>
+            <button class="popup-btn" onclick="closeNotice()" style="background: #020617; color: #c5a059; border: 2px solid #c5a059; padding: 10px 25px; border-radius: 8px; font-weight: bold; cursor: pointer;">OKAY, I UNDERSTAND</button>
+        </div>
     </div>
-</div>
 
 <header>
     <div class="logo-container">
