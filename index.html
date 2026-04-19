@@ -560,24 +560,30 @@ footer {
             }
         });     
 
-        const target = new Date("April 30, 2026 09:00:00").getTime();
-        setInterval(() => {
-            const now = new Date().getTime();
-            const diff = target - now;
+        // Ensure this date is in the future
+const target = new Date("April 30, 2026 09:00:00").getTime();
 
-            if (diff > 0) {
-                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const s = Math.floor((diff % (1000 * 60)) / 1000);
+const timer = setInterval(function() {
+    const now = new Date().getTime();
+    const diff = target - now;
 
-                // Adding String().padStart ensures the numbers are always 2 digits (e.g. 05 instead of 5)
-                document.getElementById("days").innerText = String(d).padStart(2, '0');
-                document.getElementById("hours").innerText = String(h).padStart(2, '0');
-                document.getElementById("minutes").innerText = String(m).padStart(2, '0');
-                document.getElementById("seconds").innerText = String(s).padStart(2, '0');
-            }
-        }, 1000);
+    if (diff > 0) {
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+        // These IDs MUST match the IDs in your HTML spans above
+        document.getElementById("days").innerHTML = String(d).padStart(2, '0');
+        document.getElementById("hours").innerHTML = String(h).padStart(2, '0');
+        document.getElementById("minutes").innerHTML = String(m).padStart(2, '0');
+        document.getElementById("seconds").innerHTML = String(s).padStart(2, '0');
+    } else {
+        clearInterval(timer);
+        document.getElementById("days").innerHTML = "00";
+        // ... etc
+    }
+}, 1000);
     </script>
 </body>
 </html>
