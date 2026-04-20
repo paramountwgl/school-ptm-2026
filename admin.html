@@ -227,98 +227,96 @@ db.ref('registration_open').on('value', (snapshot) => {
         btn.style.color = "white";
     }
 });
-   function exportToExcel() {
-    console.log("Generating High-End Premium Excel...");
+  function exportToExcel() {
+    console.log("Generating Full-Color Premium Report...");
 
-    // 1. Create a hidden div to hold our table
-    const printContainer = document.createElement('div');
-    printContainer.style.display = 'none';
-    
-    // 2. Build the Styled HTML Table with specific row heights and colors
+    // 1. Build the HTML Table with INLINE CSS (This is the only way Excel sees color)
     let tableHtml = `
-        <table id="premiumExcelTable" style="border-collapse: collapse; font-family: 'Poppins', Arial, sans-serif;">
-            <tr style="height: 60px;">
-                <th colspan="8" style="background-color: #FFFF00; color: #020617; font-size: 24pt; border: 2px solid #000; text-align: center; vertical-align: middle; font-weight: bold;">
-                    PARAMOUNT ENGLISH MEDIUM SCHOOL
-                </th>
-            </tr>
-            <tr style="height: 30px;">
-                <th colspan="8" style="background-color: #fce4ec; color: #1e293b; font-size: 14pt; border: 1px solid #000; text-align: center; vertical-align: middle; font-family: 'Cinzel';">
-                    PTM 2026 OFFICIAL REGISTRATION SUMMARY REPORT
-                </th>
-            </tr>
-            <tr style="height: 25px;">
-                <th colspan="8" style="background-color: #e0f2fe; color: #0369a1; font-size: 12pt; border: 1px solid #000; text-align: center; font-weight: bold;">
-                    GENERATED ON: ${new Date().toLocaleDateString()} AT ${new Date().toLocaleTimeString()}
-                </th>
-            </tr>
-            <tr><td colspan="8" style="height: 10px;"></td></tr>
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head></head>
+        <body>
+            <table border="1">
+                <tr style="height: 60px;">
+                    <th colspan="10" style="background-color: #FFFF00; color: #000; font-size: 24pt; text-align: center; font-weight: bold; border: 2px solid #000;">
+                        PARAMOUNT ENGLISH MEDIUM SCHOOL
+                    </th>
+                </tr>
+                <tr style="height: 30px;">
+                    <th colspan="10" style="background-color: #FCE4EC; color: #000; font-size: 14pt; text-align: center; border: 1px solid #000;">
+                        OFFICIAL PTM 2026 - CORRESPONDENT'S REPORT
+                    </th>
+                </tr>
+                <tr style="height: 25px;">
+                    <th colspan="10" style="background-color: #E0F2FE; color: #0369A1; font-size: 11pt; text-align: center; border: 1px solid #000;">
+                        GENERATED ON: ${new Date().toLocaleDateString()}
+                    </th>
+                </tr>
+                <tr style="height: 15px;"><td colspan="10"></td></tr>
 
-            <tr style="font-weight: bold; text-align: center; color: #000;">
-                <th style="background-color: #f8fafc; border: 2px solid #000; width: 60px;">S. NO</th>
-                <th style="background-color: #f8fafc; border: 2px solid #000; width: 100px;">TOKEN #</th>
-                <th style="background-color: #00BAE0; border: 2px solid #000; width: 250px; color: #fff;">STUDENT(S) & CLASS</th>
-                <th style="background-color: #00BAE0; border: 2px solid #000; width: 200px; color: #fff;">PARENT NAME</th>
-                <th style="background-color: #E2E8F0; border: 2px solid #000; width: 150px;">WHATSAPP</th>
-                <th style="background-color: #FFB38A; border: 2px solid #000; width: 120px;">ATTENDANCE</th>
-                <th style="background-color: #FFB38A; border: 2px solid #000; width: 200px;">REG. DATE</th>
-                <th style="background-color: #90D26D; border: 2px solid #000; width: 150px;">VISIT STATUS</th>
-            </tr>
+                <tr style="font-weight: bold; text-align: center; height: 40px;">
+                    <th style="background-color: #F8FAFC; border: 1px solid #000; width: 50px;">S.NO</th>
+                    <th style="background-color: #F8FAFC; border: 1px solid #000; width: 80px;">TOKEN</th>
+                    <th style="background-color: #00BAE0; color: #FFFFFF; border: 1px solid #000; width: 250px;">STUDENT(S) & CLASS</th>
+                    <th style="background-color: #00BAE0; color: #FFFFFF; border: 1px solid #000; width: 200px;">PARENT NAME</th>
+                    <th style="background-color: #E2E8F0; border: 1px solid #000; width: 140px;">WHATSAPP</th>
+                    <th style="background-color: #FFB38A; border: 1px solid #000; width: 110px;">ATTENDANCE</th>
+                    <th style="background-color: #FFB38A; border: 1px solid #000; width: 180px;">REGISTRATION</th>
+                    <th style="background-color: #90D26D; border: 1px solid #000; width: 130px;">STATUS</th>
+                    <th style="background-color: #F1F5F9; border: 1px solid #000; width: 200px;">REMARKS</th>
+                    <th style="background-color: #F1F5F9; border: 1px solid #000; width: 150px;">SIGN</th>
+                </tr>
     `;
 
-    // 3. Fetch data and sort it
+    // 2. Fetch Firebase Data
     db.ref('ptm_registrations').once('value', (snapshot) => {
         let records = [];
         let serialNo = 1;
-        snapshot.forEach(child => {
-            records.push(child.val());
-        });
+        snapshot.forEach(child => records.push(child.val()));
         records.sort((a, b) => Number(a.token) - Number(b.token));
 
-        // 4. Add data rows
         records.forEach(val => {
-            let studentsStr = val.students ? 
-                val.students.map(s => `${s.name} (${s.className})`).join(" | ") : "N/A";
-            
-            const visitText = val.visited ? "ARRIVED" : "NOT VISITED";
-            const visitBg = val.visited ? "#dcfce7" : "#fee2e2"; // Green vs Red background
-            const visitColor = val.visited ? "#16a34a" : "#dc2626";
+            let studentsStr = val.students ? val.students.map(s => `${s.name} (${s.className})`).join(" | ") : "N/A";
+            const visitText = val.visited ? "ARRIVED" : "ABSENT";
+            const visitBg = val.visited ? "#DCFCE7" : "#FEE2E2"; // Green vs Red
 
             tableHtml += `
-                <tr style="height: 35px; text-align: center; vertical-align: middle;">
+                <tr style="height: 40px; text-align: center; vertical-align: middle;">
                     <td style="border: 1px solid #000;">${serialNo++}</td>
-                    <td style="border: 1px solid #000; font-weight: bold; background-color: #fffbeb;">${val.token}</td>
-                    <td style="border: 1px solid #000; text-align: left; padding-left: 10px;">${studentsStr}</td>
-                    <td style="border: 1px solid #000; text-align: left; padding-left: 10px;">${val.parentName}</td>
+                    <td style="border: 1px solid #000; font-weight: bold;">${val.token}</td>
+                    <td style="border: 1px solid #000; text-align: left; padding: 5px;">${studentsStr}</td>
+                    <td style="border: 1px solid #000; text-align: left; padding: 5px;">${val.parentName}</td>
                     <td style="border: 1px solid #000;">${val.phone}</td>
                     <td style="border: 1px solid #000;">${val.attendance}</td>
-                    <td style="border: 1px solid #000; font-size: 9pt;">${val.timestamp || 'N/A'}</td>
-                    <td style="border: 1px solid #000; background-color: ${visitBg}; color: ${visitColor}; font-weight: bold; font-size: 8pt;">${visitText}</td>
+                    <td style="border: 1px solid #000; font-size: 8pt;">${val.timestamp || 'N/A'}</td>
+                    <td style="border: 1px solid #000; background-color: ${visitBg}; font-weight: bold;">${visitText}</td>
+                    <td style="border: 1px solid #000;"></td>
+                    <td style="border: 1px solid #000;"></td>
                 </tr>
             `;
         });
 
-        // 5. Footer Summary Row
+        // 3. SIGNATURE FOOTER
         tableHtml += `
-            <tr style="height: 40px; font-weight: bold; background-color: #f1f5f9;">
-                <td colspan="4" style="border: 2px solid #000; text-align: right; padding-right: 20px;">TOTAL REGISTRATIONS:</td>
-                <td colspan="4" style="border: 2px solid #000; text-align: left; padding-left: 20px; color: #d4af37;">${records.length} Parents</td>
+            <tr style="height: 50px;"><td colspan="10"></td></tr>
+            <tr>
+                <td colspan="5" style="font-weight: bold;">TOTAL ENTRIES: ${records.length}</td>
+                <td colspan="5" style="text-align: right; font-weight: bold;">
+                    __________________________<br>
+                    CORRESPONDENT SIGNATURE
+                </td>
             </tr>
-        </table>`;
+            </body></html>
+        `;
 
-        printContainer.innerHTML = tableHtml;
-        document.body.appendChild(printContainer);
-
-        // 6. Convert to Excel
-        const worksheet = XLSX.utils.table_to_sheet(document.getElementById('premiumExcelTable'));
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "PTM_Report");
-
-        // 7. Save file
-        XLSX.writeFile(workbook, "Paramount_PTM_Premium_Report.xlsx");
-
-        // Cleanup
-        document.body.removeChild(printContainer);
+        // 4. TRIGGER DOWNLOAD
+        const dataType = 'application/vnd.ms-excel';
+        const tableSelect = tableHtml;
+        const blob = new Blob([tableSelect], { type: dataType });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = "Paramount_PTM_Premium_Report.xls"; // Saved as .xls for color support
+        link.click();
     });
 }
 // 1. Function to push a specific token to the live display
