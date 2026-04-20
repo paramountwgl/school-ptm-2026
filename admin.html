@@ -80,6 +80,12 @@
             <button class="wipe-btn" onclick="wipeData()"><i class="fas fa-trash-alt"></i> Wipe All Data</button>
             <button class="print-btn" onclick="window.print()"><i class="fas fa-print"></i> Print Report</button>
         </div>
+        <div class="admin-actions" style="justify-content: center; margin-top: 20px; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+    <span style="font-weight: bold; margin-right: 15px;">Registration Status:</span>
+    <button id="statusBtn" onclick="toggleRegistration()" style="padding: 10px 20px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s;">
+        Checking...
+    </button>
+</div>
 
         <h2 style="font-family: 'Cinzel'; border-bottom: 2px solid var(--gold); padding-bottom: 10px;" class="admin-indicator">Registration Dashboard</h2>
         
@@ -136,6 +142,27 @@
                             studentsHtml += `<div>• <b>${s.name}</b> (${s.className})</div>`;
                         });
                     }
+                    // Listen for Registration Status
+db.ref('registration_open').on('value', (snapshot) => {
+    const isOpen = snapshot.val() !== false; // Default to true if null
+    const btn = document.getElementById('statusBtn');
+    if (isOpen) {
+        btn.innerText = "OPEN (Click to Stop)";
+        btn.style.background = "#22c55e";
+        btn.style.color = "white";
+    } else {
+        btn.innerText = "CLOSED (Click to Start)";
+        btn.style.background = "#dc2626";
+        btn.style.color = "white";
+    }
+});
+
+function toggleRegistration() {
+    db.ref('registration_open').once('value', (snapshot) => {
+        const currentState = snapshot.val() !== false;
+        db.ref('registration_open').set(!currentState);
+    });
+}
 
                     const rowClass = val.visited ? 'visited-row' : '';
                     
