@@ -228,70 +228,87 @@ db.ref('registration_open').on('value', (snapshot) => {
     }
 });
    function exportToExcel() {
-    console.log("Export started...");
+    console.log("Generating Premium Excel...");
 
-    try {
-        // 1. Prepare Data
-        let dataForExcel = [
-            ["PARAMOUNT ENGLISH MEDIUM SCHOOL"],
-            ["OFFICIAL PTM 2026 REGISTRATION LIST"],
-            ["Export Date: " + new Date().toLocaleString()],
-            [], // Spacer
-            ["Token #", "Parent Name", "WhatsApp Number", "Attendance", "Students & Classes", "Registered Date", "Last Updated"]
-        ];
+    // 1. Create a hidden container for our styled table
+    const printContainer = document.createElement('div');
+    printContainer.style.display = 'none';
+    
+    // 2. Build the Styled HTML Table
+    let tableHtml = `
+        <table id="premiumExcelTable">
+            <tr>
+                <th colspan="8" style="background-color: #020617; color: #D4AF37; font-size: 20pt; height: 50px; font-family: 'Cinzel', serif; text-align: center; vertical-align: middle;">
+                    PARAMOUNT ENGLISH MEDIUM SCHOOL
+                </th>
+            </tr>
+            <tr>
+                <th colspan="8" style="background-color: #0f172a; color: #ffffff; font-size: 14pt; height: 30px; text-align: center; vertical-align: middle;">
+                    OFFICIAL PTM 2026 REGISTRATION REPORT
+                </th>
+            </tr>
+            <tr>
+                <th colspan="8" style="text-align: right; color: #64748b; font-size: 10pt;">Exported: ${new Date().toLocaleString()}</th>
+            </tr>
+            <tr><td colspan="8"></td></tr> <tr style="background-color: #D4AF37; color: #000000; font-weight: bold; border: 1px solid #000;">
+                <th style="width: 80px; border: 1px solid #000;">Visit</th>
+                <th style="width: 80px; border: 1px solid #000;">Token #</th>
+                <th style="width: 250px; border: 1px solid #000;">Students & Classes</th>
+                <th style="width: 200px; border: 1px solid #000;">Parent Name</th>
+                <th style="width: 150px; border: 1px solid #000;">WhatsApp Number</th>
+                <th style="width: 120px; border: 1px solid #000;">Attendance</th>
+                <th style="width: 200px; border: 1px solid #000;">Initial Registration</th>
+                <th style="width: 200px; border: 1px solid #000;">Last Modified</th>
+            </tr>
+    `;
 
-        // 2. Fetch Data
-        db.ref('ptm_registrations').once('value').then((snapshot) => {
-            if (!snapshot.exists()) {
-                alert("No data found in the database to export!");
-                return;
-            }
+    // 3. Fetch data and sort it
+    db.ref('ptm_registrations').once('value', (snapshot) => {
+        let records = [];
+        snapshot.forEach(child => {
+            records.push(child.val());
+        });
+        records.sort((a, b) => Number(a.token) - Number(b.token));
 
-            let records = [];
-            snapshot.forEach(child => {
-                records.push(child.val());
-            });
+        // 4. Add data rows with borders and styling
+        records.forEach(val => {
+            let studentsHtml = val.students ? 
+                val.students.map(s => `${s.name} (${s.className})`).join("<br>") : "N/A";
+            
+            // Show "YES" or "NO" for visited status
+            const visitedText = val.visited ? "✓ YES" : "✗ NO";
+            const visitColor = val.visited ? "#16a34a" : "#dc2626";
 
-            // Sort by Token
-            records.sort((a, b) => Number(a.token) - Number(b.token));
-
-            records.forEach(val => {
-                let studentsString = val.students ? 
-                    val.students.map(s => `${s.name} (${s.className})`).join(" | ") : "N/A";
-
-                dataForExcel.push([
-                    val.token || "",
-                    val.parentName || "",
-                    val.phone || "",
-                    val.attendance || "",
-                    studentsString,
-                    val.timestamp || "",
-                    val.updateTimestamp || "No Updates"
-                ]);
-            });
-
-            // 3. Generate Excel File
-            const ws = XLSX.utils.aoa_to_sheet(dataForExcel);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "PTM_List");
-
-            // Fix Column Widths
-            ws['!cols'] = [{wch:10}, {wch:25}, {wch:15}, {wch:15}, {wch:40}, {wch:22}, {wch:22}];
-
-            // 4. THE TRIGGER (Force Download)
-            XLSX.writeFile(wb, "Paramount_PTM_Report.xlsx");
-            console.log("Download triggered successfully.");
-
-        }).catch(err => {
-            alert("Firebase Error: " + err.message);
+            tableHtml += `
+                <tr style="border: 1px solid #000;">
+                    <td style="border: 1px solid #000; text-align: center; color: ${visitColor}; font-weight: bold;">${visitedText}</td>
+                    <td style="border: 1px solid #000; text-align: center; font-weight: bold;">${val.token}</td>
+                    <td style="border: 1px solid #000; padding: 5px;">${studentsHtml}</td>
+                    <td style="border: 1px solid #000; padding: 5px;">${val.parentName}</td>
+                    <td style="border: 1px solid #000; text-align: center;">${val.phone}</td>
+                    <td style="border: 1px solid #000; text-align: center;">${val.attendance}</td>
+                    <td style="border: 1px solid #000; font-size: 9pt;">${val.timestamp || 'N/A'}</td>
+                    <td style="border: 1px solid #000; font-size: 9pt; color: #0284c7;">${val.updateTimestamp || 'No Updates'}</td>
+                </tr>
+            `;
         });
 
-    } catch (e) {
-        alert("System Error: Make sure the SheetJS library is loaded.");
-        console.error(e);
-    }
-}
+        tableHtml += `</table>`;
+        printContainer.innerHTML = tableHtml;
+        document.body.appendChild(printContainer);
 
+        // 5. Convert HTML table to Excel Workbook
+        const worksheet = XLSX.utils.table_to_sheet(document.getElementById('premiumExcelTable'), { raw: true });
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "PTM_Official_List");
+
+        // 6. Generate and save the file
+        XLSX.writeFile(workbook, "Paramount_Official_PTM_Report_2026.xlsx");
+
+        // Cleanup
+        document.body.removeChild(printContainer);
+    });
+}
 // 1. Function to push a specific token to the live display
 function setLiveToken() {
     const tkn = document.getElementById('manualTokenInput').value;
