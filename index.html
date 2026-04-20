@@ -567,38 +567,41 @@ footer {
         // ... (your existing live token code) ...
     });
 
-  // REGISTRATION STATUS LISTENER
+// --- THE ULTIMATE REGISTRATION SWITCH ---
 db.ref('registration_open').on('value', (snapshot) => {
-    const isOpen = snapshot.val() !== false;
+    // We treat null as 'true' so it's open by default
+    const isOpen = snapshot.val() !== false; 
     const formSection = document.getElementById('registerSection');
     
-    console.log("Registration is currently:", isOpen ? "OPEN" : "CLOSED");
+    // Check if we already created a "Closed Message" so we don't duplicate it
+    let existingMsg = document.getElementById('closed-status-msg');
 
-    if (!isOpen && formSection) {
-        // 1. Add a CSS class to hide the original form content
-        formSection.classList.add('reg-hidden'); 
-        
-        // 2. Create the "Closed" message if it doesn't already exist
-        let closedMsg = document.getElementById('closedMessage');
-        if (!closedMsg) {
-            closedMsg = document.createElement('div');
-            closedMsg.id = 'closedMessage';
-            closedMsg.className = 'form-container';
-            closedMsg.style.textAlign = 'center';
-            closedMsg.style.border = '2px solid #dc2626';
-            closedMsg.innerHTML = `
-                <i class="fas fa-lock" style="font-size: 4rem; color: #dc2626; margin-bottom: 20px;"></i>
-                <h2 style="font-family: 'Cinzel'; color: #020617;">REGISTRATION CLOSED</h2>
-                <p style="font-size: 1.1rem; margin-top: 15px; color: #333;">The deadline for PTM 2026 registration has passed.</p>
-                <p style="font-weight: bold; color: #dc2626; margin-top: 10px;">We are no longer accepting new entries.</p>
-            `;
-            formSection.parentNode.insertBefore(closedMsg, formSection);
+    if (!isOpen) {
+        if (formSection) {
+            // 1. Completely hide the form section
+            formSection.style.display = 'none'; 
+            
+            // 2. Create and show the "Closed" message if it's not there yet
+            if (!existingMsg) {
+                const msgDiv = document.createElement('div');
+                msgDiv.id = 'closed-status-msg';
+                msgDiv.innerHTML = `
+                    <div class="form-container" style="text-align:center; margin: 40px auto; border: 3px solid #dc2626; max-width: 850px; padding: 50px 20px; background: white; border-radius: 20px;">
+                        <i class="fas fa-lock" style="font-size: 5rem; color: #dc2626; margin-bottom: 20px;"></i>
+                        <h2 style="font-family: 'Cinzel', serif; color: #020617; font-size: 2.5rem;">REGISTRATION CLOSED</h2>
+                        <p style="font-size: 1.2rem; color: #333; margin: 20px 0;">The deadline for PTM 2026 registration has passed.</p>
+                        <p style="font-weight: bold; color: #dc2626; font-size: 1.1rem;">New entries are no longer being accepted.</p>
+                        <hr style="margin: 30px auto; width: 50%; opacity: 0.2;">
+                        <p style="font-size: 0.9rem; color: #666;">Please contact the school administration for details.</p>
+                    </div>`;
+                // Place it exactly where the form used to be
+                formSection.parentNode.insertBefore(msgDiv, formSection);
+            }
         }
-    } else if (isOpen && formSection) {
-        // If you turn it back on, show the form again
-        formSection.classList.remove('reg-hidden');
-        const msg = document.getElementById('closedMessage');
-        if (msg) msg.remove();
+    } else {
+        // If you turn it back ON:
+        if (formSection) formSection.style.display = 'block';
+        if (existingMsg) existingMsg.remove();
     }
 });
 
