@@ -137,6 +137,79 @@ footer {
     border-bottom: 2px solid var(--gold);
     box-shadow: 0 4px 15px rgba(0,0,0,0.4);
 }
+        .live-meeting-wrapper {
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.live-indicator {
+    font-size: 0.75rem;
+    color: var(--gold);
+    letter-spacing: 3px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Pulsing red dot for the Live indicator */
+.live-indicator i {
+    color: #ff4d4d;
+    font-size: 0.6rem;
+    animation: blink 1.5s infinite;
+}
+
+.live-token-box {
+    display: inline-flex;
+    padding: 20px 50px;
+    background: rgba(2, 6, 23, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 2px solid var(--gold);
+    /* THE GOLD GLOW */
+    box-shadow: 0 0 25px rgba(197, 160, 89, 0.5), 
+                inset 0 0 15px rgba(197, 160, 89, 0.2);
+    animation: breathingGlow 3s infinite ease-in-out;
+}
+
+.live-token-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.live-token-number {
+    font-family: 'Cinzel', serif;
+    font-size: 3.5rem; /* Large and bold like the countdown */
+    font-weight: 800;
+    color: var(--gold);
+    line-height: 1;
+    text-shadow: 0 0 15px rgba(197, 160, 89, 0.6);
+}
+
+.live-token-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: white;
+    margin-top: 5px;
+    opacity: 0.8;
+}
+
+/* Animations */
+@keyframes breathingGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(197, 160, 89, 0.4); transform: scale(1); }
+    50% { box-shadow: 0 0 40px rgba(197, 160, 89, 0.8); transform: scale(1.02); }
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
 
 .marquee-content {
     display: inline-block;
@@ -317,6 +390,17 @@ footer {
 </div>
 
     <section class="hero" id="heroSection">
+        <div class="live-meeting-wrapper">
+    <span class="live-indicator">
+        <i class="fas fa-circle"></i> LIVE MEETING STATUS
+    </span>
+    <div class="live-token-box">
+        <div class="live-token-item">
+            <span class="live-token-number" id="liveTokenDisplay">--</span>
+            <span class="live-token-label">Current Token</span>
+        </div>
+    </div>
+</div>
         <p style="font-family: 'Great Vibes', cursive; font-size: 3rem; color: var(--gold); margin-bottom: 5px;">Invitation To</p>
         <div class="event-container">
             <span class="event-title">PARENTS & TEACHERS MEET</span>
@@ -505,7 +589,17 @@ footer {
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
+// Sync the Live Token from Admin Panel
+db.ref('live_token_status').on('value', (snapshot) => {
+    const data = snapshot.val();
+    const display = document.getElementById('liveTokenDisplay');
+    
+    if (data && data.current) {
+        display.innerText = data.current;
+    } else {
+        display.innerText = "--";
+    }
+});
     // 1. MASTER REGISTRATION LISTENER
     db.ref('registration_open').on('value', (snapshot) => {
         const isOpen = snapshot.val() !== false; // Default to true
