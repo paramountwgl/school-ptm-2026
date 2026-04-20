@@ -573,12 +573,14 @@ footer {
         // --- UPDATE LOGIC ---
         const proceed = confirm(`Token #${existingToken} is already registered to this number. Update details and keep the same token?`);
         if (proceed) {
-            const updateData = {
-                parentName: parentName,
-                students: studentArray,
-                attendance: document.getElementById('attendance').value,
-                timestamp: "Updated: " + new Date().toLocaleString()
-            };
+            // Inside the index.html submit listener (Existing Key Logic)
+const updateData = {
+    parentName: parentName,
+    students: studentArray,
+    attendance: document.getElementById('attendance').value,
+    // We keep 'timestamp' as the original, and add 'updateTimestamp' for the new time
+    updateTimestamp: new Date().toLocaleString() 
+};
             await db.ref('ptm_registrations/' + existingKey).update(updateData);
             
             document.getElementById('modalHeader').innerText = "Details Updated!";
