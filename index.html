@@ -532,37 +532,73 @@ footer {
         }
     });
 
-    // 2. FORM SUBMISSION (With Double Security Check)
-    document.getElementById('ptmForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        // --- CRITICAL SECURITY CHECK ---
-        const statusSnap = await db.ref('registration_open').once('value');
-        if (statusSnap.val() === false) {
-            alert("🛑 STOP: Registration is officially closed. You cannot generate a token.");
-            location.reload(); // Refresh to show the closed message
-            return;
+   document.getElementById('ptmForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // 1. MASTER SECURITY CHECK: Don't allow submission if closed
+    const statusSnap = await db.ref('registration_open').once('value');
+    if (statusSnap.val() === false) {
+        alert("🛑 Registration is now closed.");
+        return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    const phone = document.getElementById('phoneNumber').value;
+    const parentName = document.getElementById('parentName').value;
+    
+    btn.disabled = true;
+    btn.innerText = "Processing...";
+
+    // Gather student data
+    const names = document.querySelectorAll('.child-name');
+    const classes = document.querySelectorAll('.child-class');
+    let studentArray = [];
+    names.forEach((name, i) => {
+        studentArray.push({ name: name.value, className: classes[i].value });
+    });
+
+    // 2. CHECK FOR EXISTING NUMBER
+    const snapshot = await db.ref('ptm_registrations').once('value');
+    let existingKey = null;
+    let existingToken = null;
+
+    snapshot.forEach(child => {
+        if (child.val().phone === phone) {
+            existingKey = child.key;
+            existingToken = child.val().token;
         }
+    });
 
-        const btn = document.getElementById('submitBtn');
-        btn.disabled = true;
-        btn.innerText = "Processing...";
-
-        const names = document.querySelectorAll('.child-name');
-        const classes = document.querySelectorAll('.child-class');
-        let studentArray = [];
-        names.forEach((name, i) => {
-            studentArray.push({ name: name.value, className: classes[i].value });
-        });
-
+    if (existingKey) {
+        // --- UPDATE LOGIC ---
+        const proceed = confirm(`Token #${existingToken} is already registered to this number. Update details and keep the same token?`);
+        if (proceed) {
+            const updateData = {
+                parentName: parentName,
+                students: studentArray,
+                attendance: document.getElementById('attendance').value,
+                timestamp: "Updated: " + new Date().toLocaleString()
+            };
+            await db.ref('ptm_registrations/' + existingKey).update(updateData);
+            
+            document.getElementById('modalHeader').innerText = "Details Updated!";
+            document.getElementById('modalSubText').innerText = "Your details were updated. Your token number remains:";
+            document.getElementById('finalToken').innerText = existingToken;
+            document.getElementById('tokenModal').style.display = 'flex';
+        }
+        btn.disabled = false;
+        btn.innerText = "GENERATE / UPDATE TOKEN";
+    } else {
+        // --- NEW REGISTRATION LOGIC ---
         db.ref('ptm_token_counter').transaction(c => (c || 0) + 1, (err, comm, snap) => {
             if (comm) {
                 const tkn = snap.val();
                 const uniqueID = "PTM-" + Date.now(); 
+
                 const entry = { 
-                    parentName: document.getElementById('parentName').value, 
+                    parentName: parentName, 
                     students: studentArray, 
-                    phone: document.getElementById('phoneNumber').value, 
+                    phone: phone, 
                     attendance: document.getElementById('attendance').value, 
                     visited: false, 
                     token: tkn, 
@@ -570,6 +606,8 @@ footer {
                 };
 
                 db.ref('ptm_registrations/' + uniqueID).set(entry).then(() => { 
+                    document.getElementById('modalHeader').innerText = "Registration Successful!";
+                    document.getElementById('modalSubText').innerText = "Your official meeting token number is:";
                     document.getElementById('finalToken').innerText = tkn; 
                     document.getElementById('tokenModal').style.display = 'flex'; 
                     btn.disabled = false;
@@ -577,8 +615,8 @@ footer {
                 });
             }
         });
-    });
-
+    }
+});
     // 3. REMAINING FUNCTIONS (UI)
     function updateChildFields() {
         const count = document.getElementById('childCount').value;
