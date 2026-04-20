@@ -71,15 +71,14 @@ body {
 }
 /* Hero & Countdown Responsiveness */
 .hero {
-    /* Changed from 180px to 40px to remove the large gap */
-    padding-top: 40px !important; 
+    padding-top: 10px !important; /* Minimum space to avoid touching the banner */
+    margin-top: 0 !important;     /* Ensure no extra margin is adding space */
     min-height: auto;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
     text-align: center;
-    /* keep your existing background gradients here */
 }
     #countdown {
     display: flex;
@@ -143,8 +142,9 @@ footer {
     box-shadow: 0 4px 15px rgba(0,0,0,0.4);
 }
         .live-meeting-wrapper {
-    margin-top: 0; /* Ensures it sits right at the top of the hero */
-    margin-bottom: 30px;
+    margin-top: 0 !important;    /* Forces it to touch the top of the hero section */
+    padding-top: 0 !important;
+    margin-bottom: 25px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -161,11 +161,9 @@ footer {
     gap: 8px;
 }
 
-/* Pulsing red dot for the Live indicator */
-.live-indicator i {
-    color: #ff4d4d;
-    font-size: 0.6rem;
-    animation: blink 1.5s infinite;
+.live-indicator {
+    margin-top: 0 !important; 
+    padding-top: 0 !important;
 }
 
 .live-token-box {
