@@ -493,142 +493,116 @@ footer {
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyDRYk9KOK-ga0c88dnYMsAoifW2NJTd_Y8",
-            authDomain: "paramount-school-d55bc.firebaseapp.com",
-            databaseURL: "https://paramount-school-d55bc-default-rtdb.firebaseio.com",
-            projectId: "paramount-school-d55bc",
-            storageBucket: "paramount-school-d55bc.firebasestorage.app",
-            messagingSenderId: "130979432562",
-            appId: "1:130979432562:web:4cd94787b23f9daba51aeb",
-            measurementId: "G-ZMZHXB5GFM"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        // Fixed Admin Button Logic
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('admin') === 'true') {
-            const adminBtn = document.getElementById('hiddenAdminBtn');
-            const indicator = document.getElementById('adminIndicator');
-            if (adminBtn) adminBtn.style.display = 'inline-block';
-            if (indicator) indicator.style.display = 'none';
+        apiKey: "AIzaSyDRYk9KOK-ga0c88dnYMsAoifW2NJTd_Y8",
+        authDomain: "paramount-school-d55bc.firebaseapp.com",
+        databaseURL: "https://paramount-school-d55bc-default-rtdb.firebaseio.com",
+        projectId: "paramount-school-d55bc",
+        storageBucket: "paramount-school-d55bc.firebasestorage.app",
+        messagingSenderId: "130979432562",
+        appId: "1:130979432562:web:4cd94787b23f9daba51aeb",
+        measurementId: "G-ZMZHXB5GFM"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // 1. MASTER REGISTRATION LISTENER
+    db.ref('registration_open').on('value', (snapshot) => {
+        const isOpen = snapshot.val() !== false; // Default to true
+        const formSection = document.getElementById('registerSection');
+        let existingMsg = document.getElementById('closed-status-msg');
+
+        if (!isOpen) {
+            if (formSection) formSection.style.display = 'none'; 
+            if (!existingMsg) {
+                const msgDiv = document.createElement('div');
+                msgDiv.id = 'closed-status-msg';
+                msgDiv.innerHTML = `
+                    <div class="form-container" style="text-align:center; margin: 40px auto; border: 3px solid #dc2626; max-width: 850px; padding: 50px 20px; background: white; border-radius: 20px; color: #333;">
+                        <i class="fas fa-lock" style="font-size: 5rem; color: #dc2626; margin-bottom: 20px;"></i>
+                        <h2 style="font-family: 'Cinzel', serif; font-size: 2.2rem;">REGISTRATION CLOSED</h2>
+                        <p style="font-size: 1.1rem; margin-top: 15px;">The deadline for PTM 2026 registration has passed.</p>
+                        <p style="font-weight: bold; color: #dc2626;">New entries are no longer being accepted.</p>
+                    </div>`;
+                formSection.parentNode.insertBefore(msgDiv, formSection);
+            }
+        } else {
+            if (formSection) formSection.style.display = 'block';
+            if (existingMsg) existingMsg.remove();
+        }
+    });
+
+    // 2. FORM SUBMISSION (With Double Security Check)
+    document.getElementById('ptmForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // --- CRITICAL SECURITY CHECK ---
+        const statusSnap = await db.ref('registration_open').once('value');
+        if (statusSnap.val() === false) {
+            alert("🛑 STOP: Registration is officially closed. You cannot generate a token.");
+            location.reload(); // Refresh to show the closed message
+            return;
         }
 
-        function updateChildFields() {
-            const count = document.getElementById('childCount').value;
-            const container = document.getElementById('childrenContainer');
-            const classesHTML = `<option value="" disabled selected>Select Class</option><option value="Pre-KG (Diamond)">Pre-KG (Diamond)</option><option value="KG-1 (Ruby)">KG-1 (Ruby)</option><option value="KG-2 (Amber)">KG-2 (Amber)</option><option value="Grade-1 (Opal)">Grade-1 (Opal)</option><option value="Grade-2 (Emerald)">Grade-2 (Emerald)</option><option value="Grade-3 (Crystal)">Grade-3 (Crystal)</option><option value="Grade-4 (Citrine)">Grade-4 (Citrine)</option><option value="Grade-5 (Moonstone)">Grade-5 (Moonstone)</option><option value="Grade-6 (Alluri)">Grade-6 (Alluri)</option><option value="Grade-7 (Kalam)">Grade-7 (Kalam)</option><option value="Grade-8 (Bhagat)">Grade-8 (Bhagat)</option>`;
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerText = "Processing...";
+
+        const names = document.querySelectorAll('.child-name');
+        const classes = document.querySelectorAll('.child-class');
+        let studentArray = [];
+        names.forEach((name, i) => {
+            studentArray.push({ name: name.value, className: classes[i].value });
+        });
+
+        db.ref('ptm_token_counter').transaction(c => (c || 0) + 1, (err, comm, snap) => {
+            if (comm) {
+                const tkn = snap.val();
+                const uniqueID = "PTM-" + Date.now(); 
+                const entry = { 
+                    parentName: document.getElementById('parentName').value, 
+                    students: studentArray, 
+                    phone: document.getElementById('phoneNumber').value, 
+                    attendance: document.getElementById('attendance').value, 
+                    visited: false, 
+                    token: tkn, 
+                    timestamp: new Date().toLocaleString() 
+                };
+
+                db.ref('ptm_registrations/' + uniqueID).set(entry).then(() => { 
+                    document.getElementById('finalToken').innerText = tkn; 
+                    document.getElementById('tokenModal').style.display = 'flex'; 
+                    btn.disabled = false;
+                    btn.innerText = "GENERATE TOKEN";
+                });
+            }
+        });
+    });
+
+    // 3. REMAINING FUNCTIONS (UI)
+    function updateChildFields() {
+        const count = document.getElementById('childCount').value;
+        const container = document.getElementById('childrenContainer');
+        const classesHTML = `<option value="" disabled selected>Select Class</option><option value="Pre-KG (Diamond)">Pre-KG (Diamond)</option><option value="KG-1 (Ruby)">KG-1 (Ruby)</option><option value="KG-2 (Amber)">KG-2 (Amber)</option><option value="Grade-1 (Opal)">Grade-1 (Opal)</option><option value="Grade-2 (Emerald)">Grade-2 (Emerald)</option><option value="Grade-3 (Crystal)">Grade-3 (Crystal)</option><option value="Grade-4 (Citrine)">Grade-4 (Citrine)</option><option value="Grade-5 (Moonstone)">Grade-5 (Moonstone)</option><option value="Grade-6 (Alluri)">Grade-6 (Alluri)</option><option value="Grade-7 (Kalam)">Grade-7 (Kalam)</option><option value="Grade-8 (Bhagat)">Grade-8 (Bhagat)</option>`;
+        if(container) {
             container.innerHTML = "";
             for (let i = 1; i <= count; i++) {
                 container.innerHTML += `<div class="child-entry"><label>Child ${i}: Name</label><input type="text" class="child-name" placeholder="Student Name" required style="margin-bottom:10px;"><label>Child ${i}: Class</label><select class="child-class" required>${classesHTML}</select></div>`;
             }
         }
-
-        
-       document.getElementById('ptmForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const btn = document.getElementById('submitBtn');
-    const phone = document.getElementById('phoneNumber').value;
-    const parentName = document.getElementById('parentName').value;
-    
-    btn.disabled = true;
-    btn.innerText = "Processing...";
-
-    // Gather child data
-    const names = document.querySelectorAll('.child-name');
-    const classes = document.querySelectorAll('.child-class');
-    let studentArray = [];
-    for (let i = 0; i < names.length; i++) {
-        studentArray.push({ name: names[i].value, className: classes[i].value });
     }
 
-    // NEW LOGIC: Always generate a new token and a unique ID (Date.now())
-    // This prevents overwriting and makes them appear "down by down"
-    db.ref('ptm_token_counter').transaction(c => (c || 0) + 1, (err, comm, snap) => {
-        if (comm) {
-            const tkn = snap.val();
-            // Use Date.now() so every submission is a unique row
-            const uniqueID = "PTM-" + Date.now(); 
-
-            const entry = { 
-                parentName: parentName, 
-                students: studentArray, 
-                phone: phone, 
-                attendance: document.getElementById('attendance').value, 
-                visited: false, 
-                token: tkn, 
-                timestamp: new Date().toLocaleString() 
-            };
-            
-    // ... Firebase config and initialization ...
-    const db = firebase.database();
-
-    // 1. Your existing Live Token Listener
-    db.ref('current_meeting_token').on('value', (snapshot) => {
-        // ... (your existing live token code) ...
-    });
-
-// --- THE ULTIMATE REGISTRATION SWITCH ---
-db.ref('registration_open').on('value', (snapshot) => {
-    // We treat null as 'true' so it's open by default
-    const isOpen = snapshot.val() !== false; 
-    const formSection = document.getElementById('registerSection');
-    
-    // Check if we already created a "Closed Message" so we don't duplicate it
-    let existingMsg = document.getElementById('closed-status-msg');
-
-    if (!isOpen) {
-        if (formSection) {
-            // 1. Completely hide the form section
-            formSection.style.display = 'none'; 
-            
-            // 2. Create and show the "Closed" message if it's not there yet
-            if (!existingMsg) {
-                const msgDiv = document.createElement('div');
-                msgDiv.id = 'closed-status-msg';
-                msgDiv.innerHTML = `
-                    <div class="form-container" style="text-align:center; margin: 40px auto; border: 3px solid #dc2626; max-width: 850px; padding: 50px 20px; background: white; border-radius: 20px;">
-                        <i class="fas fa-lock" style="font-size: 5rem; color: #dc2626; margin-bottom: 20px;"></i>
-                        <h2 style="font-family: 'Cinzel', serif; color: #020617; font-size: 2.5rem;">REGISTRATION CLOSED</h2>
-                        <p style="font-size: 1.2rem; color: #333; margin: 20px 0;">The deadline for PTM 2026 registration has passed.</p>
-                        <p style="font-weight: bold; color: #dc2626; font-size: 1.1rem;">New entries are no longer being accepted.</p>
-                        <hr style="margin: 30px auto; width: 50%; opacity: 0.2;">
-                        <p style="font-size: 0.9rem; color: #666;">Please contact the school administration for details.</p>
-                    </div>`;
-                // Place it exactly where the form used to be
-                formSection.parentNode.insertBefore(msgDiv, formSection);
-            }
+    // 4. COUNTDOWN
+    const targetDate = new Date("April 30, 2026 09:00:00").getTime();
+    setInterval(() => {
+        const diff = targetDate - new Date().getTime();
+        if (document.getElementById("days")) {
+            document.getElementById("days").innerText = String(Math.floor(diff / 86400000)).padStart(2, '0');
+            document.getElementById("hours").innerText = String(Math.floor((diff % 86400000) / 3600000)).padStart(2, '0');
+            document.getElementById("minutes").innerText = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+            document.getElementById("seconds").innerText = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
         }
-    } else {
-        // If you turn it back ON:
-        if (formSection) formSection.style.display = 'block';
-        if (existingMsg) existingMsg.remove();
-    }
-});
-
-
-            db.ref('ptm_registrations/' + uniqueID).set(entry).then(() => { 
-                document.getElementById('modalHeader').innerText = "Registration Successful!";
-                document.getElementById('modalSubText').innerText = "Your official meeting token number is:";
-                document.getElementById('finalToken').innerText = tkn; 
-                document.getElementById('tokenModal').style.display = 'flex'; 
-                btn.disabled = false;
-                btn.innerText = "GENERATE TOKEN";
-            });
-        }
-    });
-});
-            
-
-        const target = new Date("April 30, 2026 09:00:00").getTime();
-        setInterval(() => {
-            const diff = target - new Date().getTime();
-            if(document.getElementById("days")) {
-                document.getElementById("days").innerText = Math.floor(diff/86400000);
-                document.getElementById("hours").innerText = Math.floor((diff%86400000)/3600000);
-                document.getElementById("minutes").innerText = Math.floor((diff%3600000)/60000);
-                document.getElementById("seconds").innerText = Math.floor((diff%60000)/1000);
-            }
-        }, 1000);
+    }, 1000);
     </script>
 </body>
 </html>
