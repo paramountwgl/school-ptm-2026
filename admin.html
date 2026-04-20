@@ -145,7 +145,9 @@
 
         <div class="admin-actions">
             <button class="wipe-btn" onclick="wipeData()"><i class="fas fa-trash-alt"></i> Wipe All Data</button>
-            <button class="print-btn" onclick="window.print()"><i class="fas fa-print"></i> Print Report</button>
+            <button class="print-btn" onclick="exportToExcel()" style="background: #107c10; color: white; border: none;">
+    <i class="fas fa-file-excel"></i> Export to Excel
+</button>
         </div>
         <div class="admin-actions" style="justify-content: center; margin-top: 20px; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
     <span style="font-weight: bold; margin-right: 15px;">Registration Status:</span>
@@ -224,7 +226,71 @@ db.ref('registration_open').on('value', (snapshot) => {
         btn.style.color = "white";
     }
 });
-        // --- LIVE TOKEN UPDATE LOGIC ---
+     function exportToExcel() {
+    // 1. Prepare Data Array
+    let dataForExcel = [
+        ["PARAMOUNT ENGLISH MEDIUM SCHOOL"], // Header Row 1
+        ["OFFICIAL PTM 2026 REGISTRATION LIST"], // Header Row 2
+        ["Export Date: " + new Date().toLocaleString()], // Header Row 3
+        [], // Empty row for spacing
+        ["Token #", "Parent Name", "WhatsApp Number", "Attendance", "Students & Classes", "Registered Date", "Last Updated"] // Table Headers
+    ];
+
+    // 2. Collect data from the current records
+    db.ref('ptm_registrations').once('value', (snapshot) => {
+        let records = [];
+        snapshot.forEach(child => {
+            records.push(child.val());
+        });
+
+        // Sort by token number
+        records.sort((a, b) => Number(a.token) - Number(b.token));
+
+        records.forEach(val => {
+            // Flatten the students list into one readable string
+            let studentsString = "";
+            if (val.students) {
+                studentsString = val.students.map(s => `${s.name} (${s.className})`).join(" | ");
+            }
+
+            dataForExcel.push([
+                val.token,
+                val.parentName,
+                val.phone,
+                val.attendance,
+                studentsString,
+                val.timestamp || "N/A",
+                val.updateTimestamp || "No Updates"
+            ]);
+        });
+
+        // 3. Create Workbook & Worksheet
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(dataForExcel);
+
+        // 4. Premium Formatting (Column Widths)
+        const wscols = [
+            {wch: 10}, // Token
+            {wch: 25}, // Parent Name
+            {wch: 18}, // Phone
+            {wch: 15}, // Attendance
+            {wch: 45}, // Students
+            {wch: 22}, // Reg Date
+            {wch: 22}  // Update Date
+        ];
+        ws['!cols'] = wscols;
+
+        // 5. Merge School Header Cells
+        ws['!merges'] = [
+            { s: {r:0, c:0}, e: {r:0, c:6} }, // Merge school name across 7 columns
+            { s: {r:1, c:0}, e: {r:1, c:6} }  // Merge subtitle
+        ];
+
+        // 6. Generate and Download File
+        XLSX.utils.book_append_sheet(wb, ws, "PTM 2026 List");
+        XLSX.writeFile(wb, `Paramount_PTM_2026_Report.xlsx`);
+    });
+}
 
 // 1. Function to push a specific token to the live display
 function setLiveToken() {
