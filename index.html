@@ -71,14 +71,23 @@ body {
 }
 /* Hero & Countdown Responsiveness */
 .hero {
-    padding-top: 10px !important; /* Minimum space to avoid touching the banner */
-    margin-top: 0 !important;     /* Ensure no extra margin is adding space */
+    /* 1. This negative margin pulls the section UP to touch the banner */
+    margin-top: -60px !important; 
+    padding-top: 0 !important;
+    
+    /* 2. Your existing background design (DO NOT REMOVE THIS PART) */
     min-height: auto;
+    background: linear-gradient(rgba(2, 6, 23, 0.6), rgba(2, 6, 23, 0.8)), 
+                url('https://www.transparenttextures.com/patterns/stardust.png'), 
+                radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+    
+    /* 3. Layout alignment */
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
     text-align: center;
+    padding-bottom: 40px; /* Keeps space at the bottom */
 }
     #countdown {
     display: flex;
@@ -128,26 +137,15 @@ footer {
 }
        /* --- Premium Navy & Gold Announcement Banner --- */
 .announcement-banner {
-    background: #020617; /* Deep Navy Blue to match your theme */
-    color: var(--gold);  /* Gold text for that premium look */
-    padding: 12px 0;
-    font-weight: 600;
-    font-size: 0.95rem;
-    overflow: hidden;
-    position: relative;
-    z-index: 999;
-    /* Gold glow borders to separate it from the header and hero */
-    border-top: 1px solid rgba(197, 160, 89, 0.3);
+    margin-bottom: 0 !important;
     border-bottom: 2px solid var(--gold);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    position: relative;
+    z-index: 1001;
 }
-        .live-meeting-wrapper {
-    margin-top: 0 !important;    /* Forces it to touch the top of the hero section */
-    padding-top: 0 !important;
-    margin-bottom: 25px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+/* Ensure the token box sits at the very top of the hero */
+.live-meeting-wrapper {
+    margin-top: 0 !important;
+    padding-top: 20px !important; 
 }
 
 .live-indicator {
