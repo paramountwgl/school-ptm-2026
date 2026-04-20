@@ -570,27 +570,27 @@ footer {
     });
 
     if (existingKey) {
-        // --- UPDATE LOGIC ---
-        const proceed = confirm(`Token #${existingToken} is already registered to this number. Update details and keep the same token?`);
-        if (proceed) {
-            // Inside the index.html submit listener (Existing Key Logic)
-const updateData = {
-    parentName: parentName,
-    students: studentArray,
-    attendance: document.getElementById('attendance').value,
-    // We keep 'timestamp' as the original, and add 'updateTimestamp' for the new time
-    updateTimestamp: new Date().toLocaleString() 
-};
-            await db.ref('ptm_registrations/' + existingKey).update(updateData);
-            
-            document.getElementById('modalHeader').innerText = "Details Updated!";
-            document.getElementById('modalSubText').innerText = "Your details were updated. Your token number remains:";
-            document.getElementById('finalToken').innerText = existingToken;
-            document.getElementById('tokenModal').style.display = 'flex';
-        }
-        btn.disabled = false;
-        btn.innerText = "GENERATE / UPDATE TOKEN";
-    } else {
+    const proceed = confirm(`Token #${existingToken} is already registered. Update details?`);
+    if (proceed) {
+        const updateData = {
+            parentName: parentName,
+            students: studentArray,
+            attendance: document.getElementById('attendance').value,
+            // NOTICE: We do NOT send 'timestamp' here, so the original stays safe.
+            // We only add/update the 'updateTimestamp' key.
+            updateTimestamp: new Date().toLocaleString() 
+        };
+        
+        await db.ref('ptm_registrations/' + existingKey).update(updateData);
+        
+        document.getElementById('modalHeader').innerText = "Details Updated!";
+        document.getElementById('modalSubText').innerText = "Your details were updated. Your token number remains:";
+        document.getElementById('finalToken').innerText = existingToken;
+        document.getElementById('tokenModal').style.display = 'flex';
+    }
+    btn.disabled = false;
+    btn.innerText = "GENERATE / UPDATE TOKEN";
+} else {
         // --- NEW REGISTRATION LOGIC ---
         db.ref('ptm_token_counter').transaction(c => (c || 0) + 1, (err, comm, snap) => {
             if (comm) {
