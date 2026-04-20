@@ -731,6 +731,25 @@ db.ref('live_token_status').on('value', (snapshot) => {
             }
         }
     }
+        // Function to check URL parameters for Admin Mode
+function checkAdminAccess() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('admin') === 'true') {
+        // Show the Hidden Admin Button
+        const adminBtn = document.getElementById('hiddenAdminBtn');
+        if (adminBtn) {
+            adminBtn.style.display = 'inline-block';
+        }
+        // Show the Admin Indicator text
+        const adminIndicator = document.getElementById('adminIndicator');
+        if (adminIndicator) {
+            adminIndicator.style.display = 'block';
+        }
+    }
+}
+
+// Run the check when the page loads
+window.addEventListener('load', checkAdminAccess);
 
     // 4. COUNTDOWN
     const targetDate = new Date("April 30, 2026 09:00:00").getTime();
