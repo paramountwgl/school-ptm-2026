@@ -90,17 +90,18 @@
         <h2 style="font-family: 'Cinzel'; border-bottom: 2px solid var(--gold); padding-bottom: 10px;" class="admin-indicator">Registration Dashboard</h2>
         
         <table class="admin-table">
-            <thead>
-                <tr>
-                    <th style="width: 60px;">Visit</th>
-                    <th style="width: 80px;">Token no #</th>
-                    <th>Students & Classes</th>
-                    <th>Parent Name</th>
-                    <th>WhatsApp Number</th>
-                    <th>Attendance</th>
-                    <th style="width: 100px;">Action</th>
-                </tr>
-            </thead>
+           <thead>
+    <tr>
+        <th style="width: 60px;">Visit</th>
+        <th style="width: 80px;">Token #</th>
+        <th>Students & Classes</th>
+        <th>Parent Name</th>
+        <th>WhatsApp Number</th>
+        <th>Attendance</th>
+        <th>Registration Timeline</th> 
+        <th style="width: 100px;">Action</th>
+    </tr>
+</thead>
             <tbody id="adminTableBody">
                 </tbody>
         </table>
@@ -165,31 +166,46 @@ function toggleRegistration() {
                     }
                     
 
-                    const rowClass = val.visited ? 'visited-row' : '';
-                    
-                    tableBody.innerHTML += `
-                        <tr class="${rowClass}">
-                            <td style="text-align:center;">
-                                <input type="checkbox" ${val.visited ? 'checked' : ''} 
-                                onclick="toggleVisit('${val.key}', this.checked)" style="transform:scale(1.3);">
-                            </td>
-                            <td><span class="token-badge">${val.token}</span></td>
-                            <td>${studentsHtml}</td>
-                            <td>${val.parentName}</td>
-                            <td>${val.phone}</td>
-                            <td>${val.attendance}</td>
-                           <td>
+                   // Inside records.forEach(val => { ...
+const rowClass = val.visited ? 'visited-row' : '';
 
-    <button onclick="sendWA('${val.phone}', '${val.parentName}')" style="background:#25D366; color:white; border:none; padding:8px 10px; border-radius:5px; margin-right:5px;">
-        <i class="fab fa-whatsapp"></i>
-    </button>
-    
-    <button onclick="deleteEntry('${val.key}')" style="background:#dc2626; color:white; border:none; padding:8px 10px; border-radius:5px;">
-        <i class="fas fa-trash"></i>
-    </button>
-</td>
-                        </tr>
-                    `;
+// Handle the timeline display
+// We show the original timestamp and the update timestamp if it exists
+let timelineHtml = `<div style="font-size: 0.8rem; color: #64748b;">
+    <i class="far fa-calendar-plus"></i> Registered: ${val.timestamp || 'N/A'}
+</div>`;
+
+// Check if there is an update timestamp (added during the update logic in index.html)
+if (val.updateTimestamp) {
+    timelineHtml += `<div style="font-size: 0.8rem; color: #0284c7; margin-top: 5px;">
+        <i class="fas fa-edit"></i> Last Update: ${val.updateTimestamp}
+    </div>`;
+}
+
+tableBody.innerHTML += `
+    <tr class="${rowClass}">
+        <td style="text-align:center;">
+            <input type="checkbox" ${val.visited ? 'checked' : ''} 
+            onclick="toggleVisit('${val.key}', this.checked)" style="transform:scale(1.3);">
+        </td>
+        <td><span class="token-badge">${val.token}</span></td>
+        <td>${studentsHtml}</td>
+        <td>${val.parentName}</td>
+        <td>${val.phone}</td>
+        <td>${val.attendance}</td>
+        
+        <td>${timelineHtml}</td>
+
+        <td>
+            <button onclick="sendWA('${val.phone}', '${val.parentName}')" style="background:#25D366; color:white; border:none; padding:8px 10px; border-radius:5px; margin-right:5px;">
+                <i class="fab fa-whatsapp"></i>
+            </button>
+            <button onclick="deleteEntry('${val.key}')" style="background:#dc2626; color:white; border:none; padding:8px 10px; border-radius:5px;">
+                <i class="fas fa-trash"></i>
+            </button>
+        </td>
+    </tr>
+`;
                 });
             });
         }
