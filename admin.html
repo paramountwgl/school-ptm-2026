@@ -170,18 +170,25 @@ function toggleRegistration() {
 const rowClass = val.visited ? 'visited-row' : '';
 
 // Handle the timeline display
-// We show the original timestamp and the update timestamp if it exists
-let timelineHtml = `<div style="font-size: 0.8rem; color: #64748b;">
-    <i class="far fa-calendar-plus"></i> Registered: ${val.timestamp || 'N/A'}
-</div>`;
-
-// Check if there is an update timestamp (added during the update logic in index.html)
-if (val.updateTimestamp) {
-    timelineHtml += `<div style="font-size: 0.8rem; color: #0284c7; margin-top: 5px;">
-        <i class="fas fa-edit"></i> Last Update: ${val.updateTimestamp}
+// Inside the loop where you build tableBody.innerHTML
+let timelineHtml = `
+    <div style="margin-bottom: 8px;">
+        <small style="color: #64748b; font-weight: bold; text-transform: uppercase; display: block; font-size: 0.7rem;">Initial Registration:</small>
+        <span style="font-size: 0.85rem; color: #1e293b;">
+            <i class="far fa-calendar-plus" style="color: #c5a059;"></i> ${val.timestamp || 'N/A'}
+        </span>
     </div>`;
-}
 
+// Only show this block if the user has actually updated their form
+if (val.updateTimestamp) {
+    timelineHtml += `
+        <div style="padding-top: 5px; border-top: 1px solid #eee;">
+            <small style="color: #0284c7; font-weight: bold; text-transform: uppercase; display: block; font-size: 0.7rem;">Last Modified:</small>
+            <span style="font-size: 0.85rem; color: #0284c7;">
+                <i class="fas fa-history"></i> ${val.updateTimestamp}
+            </span>
+        </div>`;
+}
 tableBody.innerHTML += `
     <tr class="${rowClass}">
         <td style="text-align:center;">
