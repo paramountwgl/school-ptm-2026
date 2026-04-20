@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | Paramount PTM 2026</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="icon" type="image/png" href="School logo 2.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Graduate&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -226,83 +227,69 @@ db.ref('registration_open').on('value', (snapshot) => {
         btn.style.color = "white";
     }
 });
-    function exportToExcel() {
-    // 1. Setup the Headers for a Premium Look
-    const headerTitle = [["PARAMOUNT ENGLISH MEDIUM SCHOOL"]];
-    const subHeader = [["OFFICIAL PTM 2026 REGISTRATION REPORT"]];
-    const exportTime = [["Exported on: " + new Date().toLocaleString()]];
-    const emptyRow = [[]];
-    
-    // Column Headers
-    const tableHeaders = [
-        ["Token #", "Parent Name", "WhatsApp Number", "Attendance Status", "Student Details", "Initial Registration", "Last Modification"]
-    ];
+   function exportToExcel() {
+    console.log("Export started...");
 
-    // 2. Fetch Data from Firebase
-    db.ref('ptm_registrations').once('value', (snapshot) => {
-        let records = [];
-        snapshot.forEach(child => {
-            records.push(child.val());
+    try {
+        // 1. Prepare Data
+        let dataForExcel = [
+            ["PARAMOUNT ENGLISH MEDIUM SCHOOL"],
+            ["OFFICIAL PTM 2026 REGISTRATION LIST"],
+            ["Export Date: " + new Date().toLocaleString()],
+            [], // Spacer
+            ["Token #", "Parent Name", "WhatsApp Number", "Attendance", "Students & Classes", "Registered Date", "Last Updated"]
+        ];
+
+        // 2. Fetch Data
+        db.ref('ptm_registrations').once('value').then((snapshot) => {
+            if (!snapshot.exists()) {
+                alert("No data found in the database to export!");
+                return;
+            }
+
+            let records = [];
+            snapshot.forEach(child => {
+                records.push(child.val());
+            });
+
+            // Sort by Token
+            records.sort((a, b) => Number(a.token) - Number(b.token));
+
+            records.forEach(val => {
+                let studentsString = val.students ? 
+                    val.students.map(s => `${s.name} (${s.className})`).join(" | ") : "N/A";
+
+                dataForExcel.push([
+                    val.token || "",
+                    val.parentName || "",
+                    val.phone || "",
+                    val.attendance || "",
+                    studentsString,
+                    val.timestamp || "",
+                    val.updateTimestamp || "No Updates"
+                ]);
+            });
+
+            // 3. Generate Excel File
+            const ws = XLSX.utils.aoa_to_sheet(dataForExcel);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "PTM_List");
+
+            // Fix Column Widths
+            ws['!cols'] = [{wch:10}, {wch:25}, {wch:15}, {wch:15}, {wch:40}, {wch:22}, {wch:22}];
+
+            // 4. THE TRIGGER (Force Download)
+            XLSX.writeFile(wb, "Paramount_PTM_Report.xlsx");
+            console.log("Download triggered successfully.");
+
+        }).catch(err => {
+            alert("Firebase Error: " + err.message);
         });
 
-        // Sort by Token Number
-        records.sort((a, b) => Number(a.token) - Number(b.token));
-
-        // Prepare the body rows
-        const bodyRows = records.map(val => {
-            let studentsString = val.students ? 
-                val.students.map(s => `${s.name} (${s.className})`).join(" | ") : "N/A";
-            
-            return [
-                val.token,
-                val.parentName,
-                val.phone,
-                val.attendance,
-                studentsString,
-                val.timestamp || "N/A",
-                val.updateTimestamp || "No Updates"
-            ];
-        });
-
-        // 3. Combine everything into one dataset
-        const finalData = [
-            ...headerTitle,
-            ...subHeader,
-            ...exportTime,
-            ...emptyRow,
-            ...tableHeaders,
-            ...bodyRows
-        ];
-
-        // 4. Create the Excel Sheet
-        const ws = XLSX.utils.aoa_to_sheet(finalData);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "PTM_Registration_List");
-
-        // 5. Apply Column Widths (So it looks premium immediately)
-        const wscols = [
-            {wch: 10}, // Token
-            {wch: 25}, // Parent
-            {wch: 18}, // Phone
-            {wch: 18}, // Attendance
-            {wch: 50}, // Students (Wide for multiple kids)
-            {wch: 25}, // Initial Date
-            {wch: 25}  // Update Date
-        ];
-        ws['!cols'] = wscols;
-
-        // 6. Merge the School Name across the top
-        ws['!merges'] = [
-            { s: {r:0, c:0}, e: {r:0, c:6} }, // Merge School Name
-            { s: {r:1, c:0}, e: {r:1, c:6} }  // Merge Report Title
-        ];
-
-        // 7. Trigger the Download
-        // Most browsers will save this to your "Downloads" folder instantly
-        XLSX.writeFile(wb, `Paramount_PTM_2026_Report.xlsx`);
-        
-        // Wit: If your computer could talk, it would say 'Here you go, Principal!'
-    });
+    } catch (e) {
+        alert("System Error: Make sure the SheetJS library is loaded.");
+        console.error(e);
+    }
 }
 
 // 1. Function to push a specific token to the live display
