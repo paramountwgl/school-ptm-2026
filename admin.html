@@ -281,11 +281,35 @@ tableBody.innerHTML += `
                 db.ref('ptm_registrations/' + key).remove();
             }
         }
+// Paste this near your other functions (like toggleVisit or deleteEntry)
+async function sendWA(phone, parent, key) {
+    try {
+        // 1. Fetch the latest status from the database for this specific parent
+        const snapshot = await db.ref('ptm_registrations/' + key).once('value');
+        const data = snapshot.val();
+        
+        // Default to false if no data is found
+        const hasVisited = data ? data.visited : false;
 
-        function sendWA(phone, parent) {
-            const msg = `Dear ${parent}, regarding the PTM meeting at Paramount School...`;
-            window.open(`https://wa.me/${phone.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`, '_blank');
+        let msg = "";
+
+        // 2. The Logic: Check if they attended or not
+        if (hasVisited) {
+            msg = `Dear ${parent}, Thank you for attending the PTM 2026 at Paramount English Medium School. We appreciate your time and involvement!`;
+        } else {
+            msg = `Dear ${parent}, We missed you at our PTM 2026 today at Paramount English Medium School. Please contact the office if you need any updates regarding your child's progress.`;
         }
+
+        // 3. Open WhatsApp with the custom message
+        const encodedMsg = encodeURIComponent(msg);
+        const cleanPhone = phone.replace(/\D/g, ''); // Removes any non-numbers
+        window.open(`https://wa.me/${cleanPhone}?text=${encodedMsg}`, '_blank');
+        
+    } catch (error) {
+        console.error("WhatsApp Error:", error);
+        alert("Error fetching parent status. Please try again.");
+    }
+}
 
         function wipeData() {
             if (prompt("Type PTM2026 to DELETE ALL DATA:") === "PTM2026") {
