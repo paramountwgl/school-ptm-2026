@@ -86,6 +86,26 @@
         Checking...
     </button>
 </div>
+        <div class="admin-actions" style="justify-content: center; flex-direction: column; background: #fffbeb; padding: 20px; border-radius: 15px; border: 2px solid #d4af37; margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+    <h3 style="font-family: 'Cinzel'; color: #92400e; margin-bottom: 15px;">
+        <i class="fas fa-bullhorn"></i> Live Meeting Controller
+    </h3>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <span style="font-weight: bold; color: #333;">Currently Calling:</span>
+        <input type="number" id="manualTokenInput" placeholder="Token #" style="width: 100px; padding: 10px; border: 2px solid #d4af37; border-radius: 8px; font-weight: bold; text-align: center; font-size: 1.2rem;">
+        
+        <button onclick="setLiveToken()" style="background: #22c55e; color: white; border: none; padding: 10px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s;">
+            UPDATE STATUS
+        </button>
+        
+        <button onclick="clearLiveToken()" style="background: #64748b; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+            CLEAR
+        </button>
+    </div>
+    <div id="liveStatusNotify" style="margin-top: 10px; font-size: 0.85rem; color: #22c55e; font-weight: bold; display: none;">
+        ✅ Live Status Updated!
+    </div>
+</div>
 
         <h2 style="font-family: 'Cinzel'; border-bottom: 2px solid var(--gold); padding-bottom: 10px;" class="admin-indicator">Registration Dashboard</h2>
         
@@ -137,6 +157,41 @@ db.ref('registration_open').on('value', (snapshot) => {
         btn.style.color = "white";
     }
 });
+        // --- LIVE TOKEN UPDATE LOGIC ---
+
+// 1. Function to push a specific token to the live display
+function setLiveToken() {
+    const tkn = document.getElementById('manualTokenInput').value;
+    const notify = document.getElementById('liveStatusNotify');
+
+    if (!tkn) {
+        alert("Please enter a token number first.");
+        return;
+    }
+
+    db.ref('live_token_status').set({
+        current: tkn,
+        updatedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }).then(() => {
+        // Show a quick success message
+        notify.style.display = "block";
+        setTimeout(() => { notify.style.display = "none"; }, 3000);
+    }).catch((error) => {
+        console.error("Firebase Error:", error);
+        alert("Failed to update. Check your database permissions.");
+    });
+}
+
+// 2. Function to reset the display back to "--"
+function clearLiveToken() {
+    if(confirm("Clear the live token display for all parents?")) {
+        db.ref('live_token_status').set({
+            current: "--",
+            updatedAt: ""
+        });
+        document.getElementById('manualTokenInput').value = "";
+    }
+}
 
 function toggleRegistration() {
     db.ref('registration_open').once('value', (snapshot) => {
