@@ -458,11 +458,15 @@ function toggleRegistration() {
 
                 records.forEach(val => {
                     let studentsHtml = "";
-                    if (val.students) {
-                        val.students.forEach(s => {
-                            studentsHtml += `<div>• <b>${s.name}</b> (${s.className})</div>`;
-                        });
-                    }
+let studentsPlain = ""; // New variable for text-only names
+
+if (val.students) {
+    val.students.forEach((s, index) => {
+        studentsHtml += `<div>• <b>${s.name}</b> (${s.className})</div>`;
+        // Create a plain text list: "Name (Class), Name (Class)"
+        studentsPlain += `${s.name} (${s.className})${index < val.students.length - 1 ? ', ' : ''}`;
+    });
+}
                     
 
                    // Inside records.forEach(val => { ...
@@ -517,13 +521,13 @@ tableBody.innerHTML += `
         </td>
 
         <td data-label="Queue Alert" style="text-align:center;">
-            <button class="alert-btn" ${isDisabled} 
-                onclick="sendQueueAlert('${val.phone}', '${val.parentName}', '${val.token}')" 
-                title="Alert Parent to be Ready"
-                style="background: #f59e0b; color: white; border: none; padding: 8px 12px; border-radius: 5px;">
-                <i class="fas fa-bell"></i>
-            </button>
-        </td>
+        <button class="alert-btn" ${isDisabled} 
+            onclick="sendQueueAlert('${val.phone}', '${val.parentName}', '${val.token}', '${studentsPlain.replace(/'/g, "\\'")}')" 
+            title="Alert Parent to be Ready">
+            style="background: #f59e0b; color: white; border: none; padding: 8px 12px; border-radius: 5px;">
+            <i class="fas fa-bell"></i>
+        </button>
+    </td>
 
         <td data-label="Management">
             <div style="display: flex; gap: 5px; justify-content: flex-end;">
@@ -549,12 +553,19 @@ tableBody.innerHTML += `
                 db.ref('ptm_registrations/' + key).remove();
             }
         }
-        function sendQueueAlert(phone, parent, token) {
+        function sendQueueAlert(phone, parent, token, students) {
+    // Determine if we should say "student" or "students"
+    const studentLabel = students.includes(',') ? "Students" : "Student";
+
     const msg = `Dear ${parent}, 
-    
+
 This is a friendly reminder from PARAMOUNT ENGLISH MEDIUM SCHOOL. 
 
-Your Token Number is *#${token}*. You are next in queue to meet with the Correspondent Sir. Please be ready and proceed toward the office/meeting area.
+*Details:*
+📌 Token Number: *#${token}*
+🎓 ${studentLabel}: ${students}
+
+You are next in queue to meet with the Correspondent Sir. Please be ready and proceed toward the office/meeting area.
 
 We appreciate your patience.
 Regards,
@@ -563,7 +574,6 @@ Paramount Admin`;
     const encodedMsg = encodeURIComponent(msg);
     const cleanPhone = phone.replace(/\D/g, '');
     
-    // Using api.whatsapp.com for better cross-platform compatibility
     window.open(`https://wa.me/${cleanPhone}?text=${encodedMsg}`, '_blank');
 }
 // Paste this near your other functions (like toggleVisit or deleteEntry)
