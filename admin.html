@@ -127,6 +127,74 @@
     .admin-table th:last-child, .admin-table td:last-child { 
         display: none !important; 
     }
+    /* --- MOBILE RESPONSIVE FIX --- */
+@media screen and (max-width: 768px) {
+    /* 1. Prevent the container from leaking off-screen */
+    .admin-container {
+        width: 98%;
+        margin: 10px auto;
+        padding: 10px;
+        overflow-x: hidden;
+    }
+
+    /* 2. Force the table to become a vertical list */
+    .admin-table, 
+    .admin-table thead, 
+    .admin-table tbody, 
+    .admin-table th, 
+    .admin-table td, 
+    .admin-table tr { 
+        display: block; 
+        width: 100%;
+    }
+
+    /* 3. Hide the original header row */
+    .admin-table thead {
+        display: none;
+    }
+
+    /* 4. Style each row like a "Card" */
+    .admin-table tr {
+        margin-bottom: 15px;
+        border: 2px solid var(--gold);
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    /* 5. Align data to the right and labels to the left */
+    .admin-table td {
+        text-align: right;
+        padding-left: 45%;
+        position: relative;
+        border: none;
+        border-bottom: 1px solid #eee;
+        min-height: 40px;
+    }
+
+    /* 6. This creates the labels (Parent, Phone, etc.) on the left */
+    .admin-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: 40%;
+        text-align: left;
+        font-weight: bold;
+        color: var(--space-dark);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+    }
+
+    /* 7. Stack the top action buttons (Wipe/Excel) so they don't overlap */
+    .admin-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .admin-actions button {
+        width: 100%;
+    }
+}
 
     /* Ensure Token looks clean on paper */
     .token-badge { 
@@ -425,35 +493,50 @@ const isDisabled = val.visited ? 'disabled' : '';
 
 tableBody.innerHTML += `
     <tr class="${rowClass}">
-        <td style="text-align:center;">
+        <td data-label="Visit Status" style="text-align:center;">
             <input type="checkbox" ${val.visited ? 'checked' : ''} 
             onclick="toggleVisit('${val.key}', this.checked)" style="transform:scale(1.3);">
         </td>
-        <td><span class="token-badge">${val.token}</span></td>
-        <td>${studentsHtml}</td>
-        <td>${val.parentName}</td>
-        <td>${val.phone}</td>
-        <td>${val.attendance}</td>
-        <td>${timelineHtml}</td>
+        <td data-label="Token #">
+            <span class="token-badge">${val.token}</span>
+        </td>
+        <td data-label="Students">
+            ${studentsHtml}
+        </td>
+        <td data-label="Parent Name">
+            ${val.parentName}
+        </td>
+        <td data-label="WhatsApp">
+            ${val.phone}
+        </td>
+        <td data-label="Attendance">
+            ${val.attendance}
+        </td>
+        <td data-label="Timeline">
+            ${timelineHtml}
+        </td>
 
-        <td style="text-align:center;">
+        <td data-label="Queue Alert" style="text-align:center;">
             <button class="alert-btn" ${isDisabled} 
                 onclick="sendQueueAlert('${val.phone}', '${val.parentName}', '${val.token}')" 
-                title="Alert Parent to be Ready">
+                title="Alert Parent to be Ready"
+                style="background: #f59e0b; color: white; border: none; padding: 8px 12px; border-radius: 5px;">
                 <i class="fas fa-bell"></i>
             </button>
         </td>
 
-        <td>
-            <button onclick="sendWA('${val.phone}', '${val.parentName}', '${val.key}')" style="background:#25D366; color:white; border:none; padding:8px 10px; border-radius:5px; margin-right:5px;">
-                <i class="fab fa-whatsapp"></i>
-            </button>
-            <button onclick="deleteEntry('${val.key}')" style="background:#dc2626; color:white; border:none; padding:8px 10px; border-radius:5px;">
-                <i class="fas fa-trash"></i>
-            </button>
+        <td data-label="Management">
+            <div style="display: flex; gap: 5px; justify-content: flex-end;">
+                <button onclick="sendWA('${val.phone}', '${val.parentName}', '${val.key}')" style="background:#25D366; color:white; border:none; padding:8px 10px; border-radius:5px;">
+                    <i class="fab fa-whatsapp"></i>
+                </button>
+                <button onclick="deleteEntry('${val.key}')" style="background:#dc2626; color:white; border:none; padding:8px 10px; border-radius:5px;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
         </td>
     </tr>
-`;            });
+`;          });
             });
         }
 
