@@ -60,6 +60,22 @@
         padding: 0 !important; 
         box-shadow: none !important; 
     }
+    /* Styling for the Alert Button */
+.alert-btn {
+    background: #f59e0b; /* Amber/Orange */
+    color: white;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.alert-btn:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
 
     /* Official School Header in PDF */
     #printOnlyHeader { 
@@ -189,7 +205,7 @@
         <th>WhatsApp Number</th>
         <th>Attendance</th>
         <th>Registration Timeline</th> 
-        <th style="width: 100px;">Action</th>
+        <th style="width: 80px;">Queue</th> <th style="width: 100px;">Action</th>
     </tr>
 </thead>
             <tbody id="adminTableBody">
@@ -404,6 +420,9 @@ if (val.updateTimestamp) {
             </span>
         </div>`;
 }
+// Determine if button should be disabled
+const isDisabled = val.visited ? 'disabled' : '';
+
 tableBody.innerHTML += `
     <tr class="${rowClass}">
         <td style="text-align:center;">
@@ -415,11 +434,18 @@ tableBody.innerHTML += `
         <td>${val.parentName}</td>
         <td>${val.phone}</td>
         <td>${val.attendance}</td>
-        
         <td>${timelineHtml}</td>
 
+        <td style="text-align:center;">
+            <button class="alert-btn" ${isDisabled} 
+                onclick="sendQueueAlert('${val.phone}', '${val.parentName}', '${val.token}')" 
+                title="Alert Parent to be Ready">
+                <i class="fas fa-bell"></i>
+            </button>
+        </td>
+
         <td>
-            <button onclick="sendWA('${val.phone}', '${val.parentName}')" style="background:#25D366; color:white; border:none; padding:8px 10px; border-radius:5px; margin-right:5px;">
+            <button onclick="sendWA('${val.phone}', '${val.parentName}', '${val.key}')" style="background:#25D366; color:white; border:none; padding:8px 10px; border-radius:5px; margin-right:5px;">
                 <i class="fab fa-whatsapp"></i>
             </button>
             <button onclick="deleteEntry('${val.key}')" style="background:#dc2626; color:white; border:none; padding:8px 10px; border-radius:5px;">
@@ -427,8 +453,7 @@ tableBody.innerHTML += `
             </button>
         </td>
     </tr>
-`;
-                });
+`;            });
             });
         }
 
@@ -441,6 +466,23 @@ tableBody.innerHTML += `
                 db.ref('ptm_registrations/' + key).remove();
             }
         }
+        function sendQueueAlert(phone, parent, token) {
+    const msg = `Dear ${parent}, 
+    
+This is a friendly reminder from PARAMOUNT ENGLISH MEDIUM SCHOOL. 
+
+Your Token Number is *#${token}*. You are next in queue to meet with the Correspondent Sir. Please be ready and proceed toward the office/meeting area.
+
+We appreciate your patience.
+Regards,
+Paramount Admin`;
+
+    const encodedMsg = encodeURIComponent(msg);
+    const cleanPhone = phone.replace(/\D/g, '');
+    
+    // Using api.whatsapp.com for better cross-platform compatibility
+    window.open(`https://wa.me/${cleanPhone}?text=${encodedMsg}`, '_blank');
+}
 // Paste this near your other functions (like toggleVisit or deleteEntry)
 async function sendWA(phone, parent, key) {
     try {
