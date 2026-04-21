@@ -552,17 +552,20 @@ tableBody.innerHTML += `
                 db.ref('ptm_registrations/' + key).remove();
             }
         }
-        function sendQueueAlert(phone, parent, token, students) {
-    // Determine if we should say "student" or "students"
+       function sendQueueAlert(phone, parent, token, students) {
     const studentLabel = students.includes(',') ? "Students" : "Student";
+    
+    // Using Unicode codes to ensure emojis show up correctly
+    const pinEmoji = "\uD83D\uDCCC"; // 🎟️
+    const gradEmoji = "\uD83C\uDF13"; // 🎓
 
     const msg = `Dear ${parent}, 
 
 This is a friendly reminder from PARAMOUNT ENGLISH MEDIUM SCHOOL. 
 
 *Details:*
-🎟️ Your Token Number: *#${token}*
-🎓 ${studentLabel}: ${students}
+${pinEmoji} Token Number: *#${token}*
+${gradEmoji} ${studentLabel}: ${students}
 
 You are next in queue to meet with the Correspondent Sir. Please be ready and proceed toward the office/meeting area.
 
